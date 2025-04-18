@@ -1,0 +1,44 @@
+<div class="panel panel-primary">
+    <div class="panel-heading">
+      {{ tituloListado }}
+    </div>
+  
+    <div *ngIf="cupones.length === 0">
+      <h4>No hay cupones disponibles</h4>
+    </div>
+  
+    <div *ngIf="cupones.length > 0" class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Descuento (%)</th>
+            <th>Solo Nuevos Usuarios</th>
+            <th>Fecha Expiración</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let coupon of cupones">
+            <td>{{ coupon.codigo }}</td>
+            <td>{{ coupon.porcentaje_descuento }}%</td>
+            <td>{{ coupon.solo_nuevos_usuarios ? 'Sí' : 'No' }}</td>
+            <td>{{ coupon.fecha_expiracion || 'Sin caducidad' }}</td>
+            <td>
+              <!--<button type="button" class="btn btn-success btn-sm"
+                [routerLink]="['/admin-panel/coupon-edit/', coupon.id]">
+                Editar
+              </button>-->
+            </td>
+            <td>
+              <button type="button" class="btn btn-danger btn-sm"
+                (click)="eliminarCupon(coupon.id)">
+                Eliminar
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  

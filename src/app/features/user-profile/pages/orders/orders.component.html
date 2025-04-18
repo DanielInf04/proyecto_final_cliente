@@ -1,0 +1,148 @@
+<div class="accordion" id="accordionPedidos">
+  <div class="accordion-item mb-2" *ngFor="let pedido of pedidos; let i = index">
+    <h2 class="accordion-header" id="heading{{ i }}">
+      <button
+        class="accordion-button collapsed bg-primary text-white fw-bold"
+        type="button"
+        data-bs-toggle="collapse"
+        [attr.data-bs-target]="'#collapse' + i"
+        aria-expanded="false"
+        [attr.data-bs-target]="'#collapse' + i">
+        Pedido #{{ pedido.id }} — {{ pedido.fecha_pedido }} — Estado: {{ pedido.status }}
+      </button>
+    </h2>
+
+    <div
+      [id]="'collapse' + i"
+      class="accordion-collapse collapse"
+      [attr.aria-labelledby]="'heading' + i"
+      data-bs-parent="#accordionPedidos">
+      
+      <div class="accordion-body bg-white">
+        <div class="mb-3">
+          <p><strong>Enviado a:</strong> {{ pedido.nombre_completo }}</p>
+          <p><strong>Dirección:</strong> {{ pedido.direccion }}</p>
+          <p class="fs-5"><strong>Total:</strong> <span class="text-success">€{{ pedido.total }}</span></p>
+        </div>
+
+        <hr />
+
+        <div *ngFor="let empresa of pedido.empresas" class="mb-4">
+          <p class="mb-1"><strong>Empresa:</strong> {{ empresa.nombre }}</p>
+          <!--<p><strong>Estado del envío:</strong> {{ empresa.estado_envio }}</p>-->
+          <div class="mb-2">
+            <strong>Estado del envío: 
+              <strong
+                class="badge text-uppercase me-3 p-2"
+                [ngClass]="{
+                  'bg-warning text-dark': empresa.estado_envio === 'pendiente',
+                  'bg-info text-dark': empresa.estado_envio === 'preparando',
+                  'bg-primary': empresa.estado_envio === 'enviado',
+                  'bg-success': empresa.estado_envio === 'entregado',
+                  'bg-danger': empresa.estado_envio === 'cancelado'
+                }">
+              {{ empresa.estado_envio }}
+              </strong>
+            </strong>
+          </div>
+          
+
+          <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle bg-light">
+              <thead class="table-secondary">
+                <tr class="text-center">
+                  <th>Imagen</th>
+                  <th>Producto</th>
+                  <th>Precio</th>
+                  <th>Cantidad</th>
+                  <th>Calificación</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let prod of empresa.productos" class="text-center">
+                  <td>
+                    <img
+                      [src]="prod.imagen"
+                      alt="{{ prod.nombre }}"
+                      class="img-thumbnail border rounded"
+                      style="width: auto; height: 60px; object-fit: cover;" />
+                  </td>
+                  <td class="text-start">{{ prod.nombre }}</td>
+                  <td>€{{ prod.precio_unitario }}</td>
+                  <td>{{ prod.cantidad }}</td>
+                  <td>
+                    <ng-container *ngIf="prod.valoracion_cliente; else mostrarBoton">
+                      <!-- Mostrar estrellas -->
+                      <ng-container *ngFor="let estrella of [1, 2, 3, 4, 5]">
+                        <i class="bi" [ngClass]="{
+                            'bi-star-fill text-warning': estrella <= prod.valoracion_cliente,
+                            'bi-star text-muted': estrella > prod.valoracion_cliente
+                          }"></i>
+                      </ng-container>
+                    </ng-container>
+                  
+                    <ng-template #mostrarBoton>
+                      <button 
+                        *ngIf="empresa.estado_envio === 'entregado'" 
+                        class="btn btn-outline-primary btn-sm"
+                        (click)="openReviewModal(prod.producto_id, pedido.cliente_id)">
+                        Dejar reseña
+                      </button>
+                    </ng-template>
+
+                    <!--<button 
+                      *ngIf="empresa.estado_envio === 'entregado'"
+                      class="btn btn-outline-primary btn-sm"
+                      (click)="openReviewModal(prod.producto_id, pedido.cliente_id)">
+                      Dejar reseña
+                    </button>-->
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para dejar reseña -->
+<div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="reviewModalLabel">Dejar reseña</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="mb-3 text-center">
+            <label class="form-label fw-bold">Calificación</label>
+            <div class="star-rating d-flex justify-content-center gap-2">
+              <i class="bi"
+                 *ngFor="let star of [1,2,3,4,5]"
+                 [ngClass]="{
+                   'bi-star-fill': star <= reviewData.valoracion,
+                   'bi-star': star > reviewData.valoracion,
+                   'text-warning': star <= reviewData.valoracion,
+                   'text-secondary': star > reviewData.valoracion
+                 }"
+                 class="fs-2 pointer"
+                 (click)="setRating(star)">
+              </i>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="comentario" class="form-label">Comentario</label>
+            <textarea class="form-control" id="comentario" rows="3" [(ngModel)]="reviewData.comentario" name="comentario"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" (click)="submitReview()">Enviar reseña</button>
+      </div>
+    </div>
+  </div>
+</div>

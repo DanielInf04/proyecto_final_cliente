@@ -1,0 +1,48 @@
+<!--<div class="contenedor">
+    <p class="item">
+      {{titulo}}
+    </p>
+</div>-->
+<h2 class="text-center my-4">Nuestros productos</h2>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-3 mb-3" *ngFor="let producto of productos">
+      <div (click)="verProducto(producto.id)" class="card h-100 shadow-sm" style="font-size: 0.9rem; max-width: 100%;">
+
+        <!-- Imagen reducida -->
+        <div style="height: 100%; overflow: hidden;">
+          <img 
+            *ngIf="producto.imagenes?.length"
+            [src]="producto.imagenes[0]"
+            class="w-100 h-100"
+            alt="{{ producto.nombre }}"
+            style="object-fit: cover; object-position: center;">
+        </div>
+
+        <!-- Cuerpo de la card más compacto -->
+        <div class="card-body py-2 px-3">
+          <h6 class="card-title mb-1 text-truncate" style="max-width: 100%;">{{ producto.nombre }}</h6>
+          <div class="mb-1">
+            <ng-container *ngIf="producto.valoracion_promedio !== null; else sinValoracion">
+              <ng-container *ngFor="let estrella of [1, 2, 3, 4, 5]">
+                <i class="bi"
+                   [ngClass]="{
+                     'bi-star-fill text-warning': estrella <= producto.valoracion_promedio,
+                     'bi-star-half text-warning': estrella - 0.5 === producto.valoracion_promedio,
+                     'bi-star text-muted': estrella > producto.valoracion_promedio
+                   }"></i>
+              </ng-container>
+              <small class="text-muted ms-1">({{ producto.valoracion_promedio }})</small>
+            </ng-container>
+            <ng-template #sinValoracion>
+              <small class="text-muted">Sin valoraciones</small>
+            </ng-template>
+          </div>
+          <p class="card-text text-success fw-bold mb-0">{{ producto.precio_con_iva }} €</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

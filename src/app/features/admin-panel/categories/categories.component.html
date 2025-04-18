@@ -1,0 +1,32 @@
+<div class="panel panel-primary">
+    <div class="panel-heading">
+      {{tituloListado}}
+    </div>
+    <div *ngIf="categories.length==0">
+      <h4>No hay categorias</h4>
+    </div>
+    <div *ngIf="categories.length>0" class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Nombre Categoria</th>
+              <th>Porcentaje IVA</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let categoria of categories">
+              <td>{{categoria.nombre}}</td>
+              <td>{{categoria.iva_porcentaje * 100}}%</td>
+              <td>
+                <button type="button" class="btn btn-success btn-sm" 
+                        [routerLink]="['/admin-panel/category-edit/', categoria.id]">Editar</button>
+              </td>
+              <td>
+                <button type="button" class="btn btn-danger btn-sm" 
+                        (click)="eliminarCategoria(categoria.id)">Eliminar</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+    </div>
+</div>
