@@ -1,0 +1,72 @@
+<!--<div class="contenedor">
+    <p class="item">
+      {{titulo}}
+    </p>
+</div>-->
+<h2 class="text-center my-4">Nuestros productos</h2>
+
+<div class="container">
+  <div class="row">
+    <div class="col-6 col-sm-6 col-md-4 col-lg-3 mb-4" *ngFor="let producto of productos">
+      <div (click)="verProducto(producto.id)" class="card product-card h-100 shadow-sm">
+
+        <!-- Imagen -->
+        <div class="image-container p-2 text-center">
+          <img *ngIf="producto.imagenes?.length"
+               [src]="producto.imagenes[0]"
+               alt="{{ producto.nombre }}"
+               class="img-fluid">
+        </div>
+
+        <!-- Cuerpo de la card -->
+        <div class="card-body d-flex flex-column justify-content-between">
+          
+          <!-- Título -->
+          <h5 class="card-title">{{ producto.nombre }}</h5>
+          
+          <!-- Valoraciones -->
+          <div class="rating mb-2">
+            <ng-container *ngIf="producto.valoracion_promedio !== null; else sinValoracion">
+              <ng-container *ngFor="let estrella of [1, 2, 3, 4, 5]">
+                <i class="bi"
+                   [ngClass]="{
+                     'bi-star-fill text-warning': estrella <= producto.valoracion_promedio,
+                     'bi-star-half text-warning': estrella - 0.5 === producto.valoracion_promedio,
+                     'bi-star text-muted': estrella > producto.valoracion_promedio
+                   }"></i>
+              </ng-container>
+              <small class="text-muted ms-1">({{ producto.valoracion_promedio }})</small>
+            </ng-container>
+            <ng-template #sinValoracion>
+              <small class="text-muted">Sin valoraciones</small>
+            </ng-template>
+          </div>
+
+          <!-- Precios -->
+          <div class="price mb-2">
+            <ng-container *ngIf="producto.oferta; else precioNormal">
+              <span class="text-muted text-decoration-line-through me-2">
+                {{ producto.oferta.precio_original_con_iva }} €
+              </span>
+              <span class="fw-bold text-danger">
+                {{ producto.oferta.precio_oferta_con_iva }} €
+              </span>
+              <span class="badge bg-success discount-badge ms-2">
+                -{{ producto.oferta.descuento_porcentaje }}%
+              </span>
+            </ng-container>
+
+            <ng-template #precioNormal>
+              <span class="text-success fw-bold">
+                {{ producto.precio_con_iva }} €
+              </span>
+            </ng-template>
+          </div>
+
+          <small class="text-muted">IVA incluido</small>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

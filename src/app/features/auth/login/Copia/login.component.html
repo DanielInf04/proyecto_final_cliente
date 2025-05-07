@@ -1,0 +1,21 @@
+<form *ngIf="isReady" (ngSubmit)="onLogin()" class="p-4 border rounded shadow-sm" style="max-width: 400px; margin: auto;">
+    <h5 class="mb-4 text-center">Iniciar Sesión</h5>
+  
+    <div class="mb-3">
+      <label for="email" class="form-label">Email</label>
+      <input type="email" class="form-control" id="email" [(ngModel)]="email" name="email" required>
+    </div>
+  
+    <div class="mb-3">
+      <label for="password" class="form-label">Contraseña</label>
+      <input type="password" class="form-control" id="password" [(ngModel)]="password" name="password" required>
+    </div>
+  
+    <div id="googleBtn" class="mb-3 text-center"></div>
+  
+    <div class="d-flex justify-content-between">
+      <button type="button" class="btn btn-primary" [routerLink]="['/register']">Crear Cuenta</button>
+      <button type="submit" class="btn btn-success">Entrar</button>
+      <button type="button" class="btn btn-danger" (click)="onLogout()">Cerrar Sesión</button>
+    </div>
+  </form>

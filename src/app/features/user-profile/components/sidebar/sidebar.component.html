@@ -1,0 +1,51 @@
+<div class="sidebar-container bg-dark text-white">
+  <!-- Contenedor principal del contenido del sidebar -->
+  <div class="d-flex flex-column h-100 p-3" style="width: 280px;">
+    
+    <!-- Contenido principal del menú -->
+    <div class="sidebar-content">
+      <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+        <svg class="bi pe-none me-2" width="40" height="32" aria-hidden="true">
+          <use xlink:href="#bootstrap"/>
+        </svg>
+        <span class="fs-4">{{ userName }}</span>
+      </a>
+      <hr>
+      <ul class="nav nav-pills flex-column mb-auto">
+        <li class="nav-item">
+          <a [routerLink]="['/user-profile']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-link text-white" aria-current="page">
+            <svg class="bi pe-none me-2" width="16" height="16" aria-hidden="true">
+              <use xlink:href="#table"/>
+            </svg>
+            Perfil
+          </a>
+        </li>
+        <li>
+          <a [routerLink]="['/user-profile/orders']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-link text-white">
+            <svg class="bi pe-none me-2" width="16" height="16" aria-hidden="true">
+              <use xlink:href="#table"/>
+            </svg>
+            Pedidos
+          </a>
+        </li>
+        <li>
+          <a [routerLink]="['/user-profile/reviews']" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-link text-white">
+            <svg class="bi pe-none me-2" width="16" height="16" aria-hidden="true">
+              <use xlink:href="#table"/>
+            </svg>
+            Valoraciones
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Footer / perfil de usuario al fondo -->
+    <div class="sidebar-footer mt-auto pt-3 border-top">
+      <button type="button" class="btn btn-danger w-100 d-flex align-items-center justify-content-center gap-2" (click)="onLogout()">
+        <i class="bi bi-box-arrow-right"></i>
+        Cerrar Sesión
+      </button>
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,26 @@
+<h3 class="fill-remaining-space">Crear Categoria</h3>
+<div class="container">
+  <form [formGroup]="myForm" (ngSubmit)="onSubmit(myForm.value)">
+
+    <div class="form-group">
+      <label for="nombre">Nombre:</label>
+      <input class="form-control" formControlName="nombre" id="nombre">
+    </div>
+
+    <div class="form-group">
+      <label for="iva_porcentaje">Porcentaje IVA:</label>
+      <select class="form-control" formControlName="iva_porcentaje" id="iva_porcentaje">
+        <option value="" disabled selected>Selecciona un porcentaje de IVA</option>
+        <option value="0.00">Exento (0%)</option>
+        <option value="0.10">Reducido (10%)</option>
+        <option value="0.21">General (21%)</option>
+      </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-4" [disabled]="myForm.invalid">Crear Categoria</button>
+  </form>
+</div>
+
+<div *ngIf="errorMessage" class="alert alert-danger">
+  {{ errorMessage }}
+</div>

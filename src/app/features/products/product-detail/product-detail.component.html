@@ -1,0 +1,124 @@
+<div *ngIf="producto" class="container my-4">
+    <h2 class="mb-3">{{ producto.nombre }}</h2>
+  
+    <div class="row">
+      <div class="col-md-5">
+        
+        <!-- Imagen principal -->
+        <div class="mb-3" *ngIf="imagenActual">
+          <img
+            [src]="imagenActual"
+            class="img-fluid rounded w-100"
+            style="height: 100%; object-fit: cover;"
+            alt="Imagen principal del producto"
+          >
+        </div>
+  
+        <!-- Miniaturas -->
+        <div class="d-flex gap-2 overflow-auto" *ngIf="imagenesPreview.length">
+          <img
+            *ngFor="let img of imagenesPreview"
+            [src]="img"
+            (click)="cambiarImagen(img)"
+            class="rounded"
+            style="height: 80px; width: auto; cursor: pointer; object-fit: cover;"
+            alt="Miniatura"
+          >
+        </div>
+  
+      </div>
+  
+      <div class="col-md-6">
+        <p><strong>Descripción:</strong> {{ producto.descripcion }}</p>
+        <!-- Precio con lógica de oferta -->
+        <div class="mb-2">
+
+          <!-- Si tiene oferta -->
+          <ng-container *ngIf="producto.oferta; else precioNormal">
+            <p class="mb-1">
+              <span class="text-muted text-decoration-line-through">
+                {{ producto.oferta.precio_original_con_iva }} €
+              </span>
+              <span class="fw-bold text-danger ms-2 fs-5">
+                {{ producto.oferta.precio_oferta_con_iva }} €
+              </span>
+              <span class="badge bg-success ms-2">
+                -{{ producto.oferta.descuento_porcentaje }}%
+              </span>
+            </p>
+            <small class="text-muted">(IVA incluido)</small>
+          </ng-container>
+
+          <!-- Precio normal -->
+          <ng-template #precioNormal>
+            <p class="fw-bold text-success fs-3 mb-1">
+              {{ producto.precio_con_iva }} €
+            </p>
+            <small class="text-muted">(IVA incluido)</small>
+          </ng-template>
+        </div>
+        <!--<p>
+          <strong>Precio:</strong> {{ producto.precio_con_iva }} €
+          <small class="text-muted" title="Impuesto sobre el Valor Añadido incluido">(IVA incluido)</small>
+        </p>-->
+        <!--<p><strong>Stock:</strong> {{ producto.stock }}</p>-->
+  
+        <div class="input-group mt-3" style="max-width: 150px;">
+          <button class="btn btn-outline-secondary" type="button" (click)="cambiarCantidad(-1)">−</button>
+          <input type="number" class="form-control text-center" [(ngModel)]="cantidad" min="1" />
+          <button class="btn btn-outline-secondary" type="button" (click)="cambiarCantidad(1)">+</button>
+        </div>
+
+        <!-- Botón si hay stock -->
+        <button 
+          *ngIf="producto.stock > 0" 
+          class="btn btn-primary mt-3" 
+          (click)="addToCart()">
+          Añadir al carrito
+        </button>
+
+        <!-- Botón cuando no hay stock -->
+         <button
+          *ngIf="producto.stock === 0"
+          class="btn btn-danger mt-3"
+          disabled>
+          Agotado
+         </button>
+
+      </div>
+    </div>
+
+    <div class="mt-5">
+      <h4 class="mb-4 fw-bold text-center">Reseñas de clientes</h4>
+    
+      <ng-container *ngIf="resenyas.length > 0; else sinResenyas">
+        <div *ngFor="let res of resenyas" class="review-card mb-4 p-4 shadow-sm rounded">
+          
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="mb-0 fw-semibold">{{ res.cliente?.nombre || 'Usuario' }}</h6>
+            <small class="text-muted">{{ res.fecha | date: 'mediumDate' }}</small>
+          </div>
+    
+          <div class="rating mb-3">
+            <ng-container *ngFor="let star of [1, 2, 3, 4, 5]">
+              <i class="bi"
+                 [ngClass]="{
+                   'bi-star-fill text-warning': star <= res.valoracion,
+                   'bi-star text-secondary': star > res.valoracion
+                 }"></i>
+            </ng-container>
+          </div>
+    
+          <blockquote class="blockquote mb-0">
+            <p class="mb-0 fst-italic">"{{ res.comentario }}"</p>
+          </blockquote>
+    
+        </div>
+      </ng-container>
+    
+      <ng-template #sinResenyas>
+        <p class="text-center text-muted fst-italic">Este producto aún no tiene reseñas.</p>
+      </ng-template>
+    </div>
+
+  </div>

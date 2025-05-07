@@ -1,0 +1,75 @@
+<h3 class="fill-remaining-space">Editar Producto</h3>
+<div class="container">
+  <form [formGroup]="myForm" (ngSubmit)="onSubmit(myForm.value)">
+
+    <!-- Imagen principal actual -->
+    <div class="form-group">
+      <label>Imagen actual:</label><br>
+      <img *ngIf="imagenActual" [src]="imagenActual" alt="Imagen actual" height="250" class="rounded border">
+    </div>
+
+    <!-- Miniaturas del resto de imágenes actuales -->
+    <div class="form-group" *ngIf="imagenesActuales.length > 1">
+      <label>Otras imágenes actuales:</label>
+      <div class="d-flex gap-2 flex-wrap">
+        <img
+          *ngFor="let img of imagenesActuales.slice(1)"
+          [src]="img"
+          alt="Miniatura actual"
+          height="100"
+          class="rounded border"
+          style="cursor: pointer;">
+      </div>
+    </div>
+
+    <!--<div class="form-group">
+      <label for="imagen">Cambiar imagen:</label>
+      <input type="file" class="form-control mb-3" (change)="onFileSelected($event)">
+    </div>-->
+
+    <div class="form-group">
+      <label for="nombre">Nombre:</label>
+      <input class="form-control" formControlName="nombre" id="nombre">
+    </div>
+
+    <div class="form-group">
+      <label for="descripcion">Descripción:</label>
+      <input class="form-control" formControlName="descripcion" id="descripcion">
+    </div>
+
+    <div class="form-group">
+      <label for="precio_base">Precio:</label>
+      <input type="number" class="form-control" formControlName="precio_base" id="precio_base">
+    </div>
+
+    <div class="form-group">
+      <label for="stock">Stock:</label>
+      <input type="number" class="form-control" formControlName="stock" id="stock">
+    </div>
+
+    <div class="form-group">
+      <label for="categoria">Categoría:</label>
+      <select class="form-control" formControlName="categoria_id" id="categoria">
+        <option *ngFor="let cat of categorias" [value]="cat.id">{{ cat.nombre }}</option>
+      </select>
+    </div>
+
+    <div class="form-group mt-4 mb-4">
+      <h5 class="text-primary">Opcional: Oferta / Promoción</h5>
+    
+      <label for="precio_oferta">Precio con oferta:</label>
+      <input type="number" class="form-control" formControlName="precio_oferta" id="precio_oferta" placeholder="Ej. 699.99">
+    
+      <div class="form-check mt-2">
+        <input type="checkbox" class="form-check-input" formControlName="oferta_activa" id="oferta_activa">
+        <label class="form-check-label" for="oferta_activa">¿Oferta activa?</label>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary" [disabled]="myForm.invalid">Enviar</button>
+  </form>
+</div>
+
+<div *ngIf="errorMessage" class="alert alert-danger">
+  {{ errorMessage }}
+</div>

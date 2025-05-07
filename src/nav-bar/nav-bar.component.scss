@@ -1,0 +1,293 @@
+@use "sass:color";
+
+// Colores
+$primary-color: #086965;
+$secondary-color: #E8E8E8;
+
+// Más claros
+$primary-lightened: color.scale($primary-color, $lightness: 10%);
+
+// Estilos generales
+* {
+    margin: 0;
+    padding: 0;
+    font-family: "Poppins", sans-serif;
+    box-sizing: border-box;
+}
+
+// Evita conflictos con Bootstrap
+.container-fluid {
+    display: block; 
+}
+
+// Estilos para la navbar
+.contenedor {
+    display: grid;
+    grid-template-columns: 5fr 6fr 2fr; /* Distribución en tres columnas */
+    grid-template-rows: 1fr; /* Solo una fila */
+    grid-template-areas: "principal navbar adicional";
+    align-items: center;
+    width: 100%;
+    padding: 0 20px;
+}
+
+/* Sección de Navegación */
+.nav-bar-principal {
+    grid-area: principal;
+    display: flex;
+    align-items: center;
+
+    a img {
+        height: 40px;
+        width: auto;
+    }
+
+    .navbar-nav {
+        display: flex;
+        align-items: center;
+        margin-left: 15px; 
+
+        .nav-link {
+            margin-top: 8px;
+            font-weight: 500;
+            font-size: 1rem;
+            padding: 10px 15px;
+        }
+    }
+}
+
+/* Sección de Barra de Búsqueda */
+.nav-bar-secundario {
+    grid-area: navbar;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+
+    .search-bar {
+        width: 100%;
+        max-width: 600px;
+        position: relative;
+
+        input {
+            height: 45px;
+            width: 100%;
+            background-color: $secondary-color;
+            padding-right: 50px;
+            border-radius: 50px;
+            font-size: 1rem;
+            border: none;
+            
+            &:focus {
+                box-shadow: 0 0 7px $primary-lightened;
+                outline: none;
+            }
+        }
+
+        button {
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+        }
+    }
+}
+
+/* Sección de Cuenta y Carrito */
+.nav-bar-adicional {
+    grid-area: adicional;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+
+    .account_cart {
+        display: flex;
+        align-items: center;
+
+        a {
+            padding: 10px;
+            text-decoration: none;
+            color: black;
+            display: flex;
+            align-items: center;
+
+            img {
+                width: 24px;
+                height: auto;
+            }
+
+            span {
+                margin-left: 5px;
+                font-size: 14px;
+            }
+        }
+    }
+}
+
+.nav-bar-adicional {
+    a {
+        cursor: pointer;
+    }
+}
+
+@media (max-width: 1144px) {
+    .contenedor {
+        display: grid;
+        grid-template-columns: 2fr 6fr 2fr; /* 3 columnas con distribución equilibrada */
+        grid-template-rows: 1fr;
+        grid-template-areas: 
+            "menu navbar adicionales"; /* Asegura que estén en línea */
+        align-items: center;
+        width: 100%;
+        gap: 10px;
+        padding: 10px 20px;
+    }
+
+    /* Ajuste para la sección izquierda (Logo + Menú Categorías) */
+    .nav-bar-principal {
+        grid-area: menu;
+        display: flex;
+        align-items: center;
+        gap: 15px; /* Espaciado entre logo y menú */
+
+        a img {
+            height: 35px; /* Ajuste de tamaño del logo */
+        }
+
+        /* Agregar un botón de menú tipo hamburguesa */
+        .menu-hamburguesa {
+            display: block; /* Visible en esta resolución */
+            cursor: pointer;
+            font-size: 24px;
+            padding: 5px 10px;
+        }
+
+        .navbar-nav {
+            display: none; /* Ocultar el menú completo */
+        }
+    }
+
+    /* Ajuste para la barra de búsqueda */
+    .nav-bar-secundario {
+        grid-area: navbar;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        .search-bar {
+            width: 100%;
+            max-width: 700px; /* La barra de búsqueda se hace más ancha */
+        }
+    }
+
+    /* Ajuste para la sección derecha (Cuenta + Carrito) */
+    .nav-bar-adicional {
+        grid-area: adicionales;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+
+        .account_cart {
+            display: flex;
+            gap: 15px;
+
+            a {
+                display: flex;
+                align-items: center;
+                color: black;
+
+                img {
+                    width: 24px;
+                }
+
+                span {
+                    display: none; /* Oculta "Cuenta" y "Carrito", solo deja los iconos */
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 624px) {
+    .contenedor {
+        display: grid;
+        grid-template-columns: 1fr 1fr; /* Dos columnas en la primera fila */
+        grid-template-rows: auto auto; /* Dos filas */
+        grid-template-areas: 
+            "menu adicionales"  /* Primera fila: Logo + Iconos */
+            "navbar navbar";    /* Segunda fila: Barra de búsqueda ocupa el 100% */
+        align-items: center;
+        width: 100%;
+        gap: 10px;
+        padding: 0 10px;
+    }
+
+    /* Primera fila: Logo a la izquierda */
+    .nav-bar-principal {
+        grid-area: menu;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start; /* Asegura que el logo quede a la izquierda */
+        
+        a img {
+            height: 35px;
+        }
+    }
+
+    /* Primera fila: Iconos de usuario y carrito a la derecha */
+    .nav-bar-adicional {
+        grid-area: adicionales;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+
+        .account_cart {
+            display: flex;
+            gap: 10px;
+
+            a {
+                display: flex;
+                align-items: center;
+                color: black;
+
+                img {
+                    width: 24px;
+                }
+
+                span {
+                    display: none; /* Oculta los textos "Cuenta" y "Carrito" */
+                }
+            }
+        }
+    }
+
+    /* Segunda fila: Barra de búsqueda ocupa el 100% */
+    .nav-bar-secundario {
+        grid-area: navbar;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+
+        .search-bar {
+            width: 100%;
+            max-width: none; /* Elimina la restricción del tamaño */
+        }
+    }
+}
+
+.dropdown-menu {
+    min-width: 220px;
+    font-size: 0.95rem;
+  
+    .dropdown-item {
+      border-radius: 0.375rem;
+      transition: background-color 0.2s ease;
+  
+      &:hover {
+        background-color: #f0f2f5;
+      }
+    }
+  }
