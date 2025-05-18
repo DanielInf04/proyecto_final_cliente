@@ -1,0 +1,14 @@
+<app-nav-bar></app-nav-bar>
+<app-user-offcanvas></app-user-offcanvas>
+<app-cart-offcanvas></app-cart-offcanvas>
+<app-modal></app-modal>
+<app-toast
+  *ngIf="toastMessage"
+  [message]="toastMessage"
+  [type]="toastType"
+  [autoClose]="false">
+</app-toast>
+<div class="container">
+  <router-outlet></router-outlet>
+</div>
+<app-footer></app-footer>

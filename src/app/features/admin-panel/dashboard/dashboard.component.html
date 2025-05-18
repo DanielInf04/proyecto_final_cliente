@@ -1,0 +1,101 @@
+<div class="panel panel-primary">
+  <h2 class="mt-3 mb-3">{{tituloListado}}</h2>
+  
+  <div class="d-flex justify-content-center justify-content-md-start mb-4 flex-wrap gap-2">
+    <div class="input-group" style="max-width: 300px;">
+      <input
+        type="text"
+        [(ngModel)]="listFilter"
+        class="form-control"
+        placeholder="Buscar producto..."
+        (keyup.enter)="buscar()"/> 
+      <button class="btn btn-outline-secondary" type="button" > <!-- (click)="buscar()" -->
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+
+    <!-- Filtro por rol -->
+    <select class="form-select" style="max-width: 200px;" [(ngModel)]="rolSeleccionado" (change)="filtrarPorRol()">
+      <option value="">Todos los roles</option>
+      <option value="admin">Admin</option>
+      <option value="empresa">Empresa</option>
+      <option value="cliente">Cliente</option>
+    </select>
+
+  </div>
+
+  <app-alert
+    *ngIf="alertMessage"
+    [message]="alertMessage"
+    [type]="alertType"
+    [autoClose]="true">
+  </app-alert>
+
+  <div *ngIf="!isLoading && usuarios.length == 0">
+    <h4>No hay usuarios</h4>
+  </div>
+
+  <div *ngIf="!isLoading && usuarios.length > 0" class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Rol</th>
+            <th>Estado</th>
+            <th>Email</th>
+            <th>Email verificado</th>
+            <th>Fecha de creación</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let usuario of usuarios">
+            <td>{{usuario.name}}</td>
+            <td>{{usuario.role}}</td>
+            <td>
+              <select
+                class="form-control"
+                [(ngModel)]="usuario.status"
+                (change)="cambiarEstado(usuario)"
+                [disabled]="usuario.email === currentUserEmail"
+              >
+                <option value="activo">Activo</option>
+                <option value="inactivo">Inactivo</option>
+              </select>
+            </td>
+            <td>{{usuario.email}}</td>
+            <td>{{usuario.email_verified_at || 'No'}}</td>
+            <td>{{usuario.created_at | date:'dd/MM/yyyy HH:mm'}}</td>
+            <td><button type="button" class="btn btn-danger btn-sm" (click)="eliminarUsuario(usuario)" [disabled]="usuario.email === currentUserEmail">Eliminar</button></td>
+          </tr>
+        </tbody>
+      </table>
+  </div>
+
+  <div *ngIf="isLoading" class="d-flex justify-content-center align-items-center" style="min-height: 60vh;">
+    <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+  </div>
+
+  <nav *ngIf=" totalPages > 1 && !isLoading" class="d-flex justify-content-center mt-3">
+    <ul class="pagination">
+      <li class="page-item" [class.disabled]="currentPage === 1">
+        <button class="page-link" (click)="cambiarPagina(currentPage - 1)">Anterior</button>
+      </li>
+
+      <li 
+        class="page-item"
+        *ngFor="let page of [].constructor(totalPages); let i = index"
+        [class.active]="currentPage === i + 1">
+        <button class="page-link" (click)="cambiarPagina(i + 1)">
+          {{ i + 1 }}
+        </button>
+      </li>
+
+      <li class="page-item" [class.disabled]="currentPage === totalPages">
+        <button class="page-link" (click)="cambiarPagina(currentPage + 1)">Siguiente</button>
+      </li>
+    </ul>
+  </nav>
+
+</div>

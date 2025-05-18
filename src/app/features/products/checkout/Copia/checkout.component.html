@@ -1,0 +1,170 @@
+<div class="container mt-4 mb-4">
+    <div class="row">
+      <!-- Carrito -->
+      <div class="col-md-4 order-md-2 mb-4">
+        <h4 class="d-flex justify-content-between align-items-center mb-3">
+          <span class="text-muted">Tu carrito</span>
+          <span class="badge bg-secondary rounded-pill">{{ productos.length }}</span>
+        </h4>
+        <ul class="list-group mb-3">
+          <li class="list-group-item d-flex justify-content-between lh-condensed" *ngFor="let producto of productos">
+            <div>
+              <h6 class="my-0">
+                {{ producto.nombre }} 
+                <small class="text-muted">x{{ producto.cantidad }}</small>
+              </h6>
+              <small class="text-muted">{{ producto.categoria }}</small>
+            </div>
+            <span class="text-muted">{{ producto.precio * producto.cantidad | currency:'EUR':'symbol' }}</span>
+          </li>
+          <!-- Más productos dinámicos -->
+          <li *ngIf="cuponAplicado" class="list-group-item d-flex justify-content-between align-items-center bg-light">
+            <div class="text-success">
+              <h6 class="my-0">Cupón aplicado</h6>
+              <small>{{ cuponAplicado.codigo }} ({{ cuponAplicado.porcentaje_descuento }}% de descuento)</small>
+            </div>
+            <span class="text-success fw-bold">
+              -{{ calcularDescuento() | currency:'EUR':'symbol' }}
+            </span>
+          </li>
+          <!--<li class="list-group-item d-flex justify-content-between bg-light">
+            <div class="text-success">
+              <h6 class="my-0">Código promocional</h6>
+              <small>EXAMPLECODE</small>
+            </div>
+            <span class="text-success">- $5</span>
+          </li>-->
+          <li class="list-group-item d-flex justify-content-between">
+            <span>Total</span>
+            <strong>{{ total | currency:'EUR':'symbol' }}</strong>
+          </li>
+        </ul>
+  
+        <form class="card p-2">
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="Código promocional">
+            <button type="submit" class="btn btn-secondary">Aplicar</button>
+          </div>
+        </form>
+      </div>
+  
+      <!-- Formulario Checkout -->
+      <div class="col-md-8 order-md-1">
+        <h4 class="mb-3">Información personal</h4>
+        <form [formGroup]="myForm" (ngSubmit)="finalizarCompra()" class="needs-validation" novalidate>
+  
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="nombre">Nombre</label>
+              <input type="text" class="form-control" formControlName="nombre" id="nombre" required>
+              <div class="invalid-feedback">Nombre requerido.</div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="apellidos">Apellidos</label>
+              <input type="text" class="form-control" formControlName="apellidos" id="apellidos" required>
+              <div class="invalid-feedback">Apellidos requeridos.</div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="email">Correo electrónico</label>
+                <input type="email" class="form-control" formControlName="email" id="email" placeholder="correo@ejemplo.com" required>
+                <div class="invalid-feedback">Correo válido requerido.</div>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="telefono">Teléfono</label>
+                <input type="text" class="form-control" formControlName="telefono" id="telefono" required>
+                <div class="invalid-feedback">Teléfono requerido.</div>
+              </div>
+          </div>
+  
+          <hr class="mb-4">
+  
+          <h4 class="mb-3">Dirección de envío</h4>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="calle">Calle</label>
+              <input type="text" class="form-control" formControlName="calle" id="calle" required>
+            </div>
+  
+            <div class="col-md-3 mb-3">
+              <label for="puerta">Puerta</label>
+              <input type="text" class="form-control" formControlName="puerta" id="puerta" required>
+            </div>
+
+            <div class="col-md-3 mb-3">
+              <label for="piso">Piso</label>
+              <input type="text" class="form-control" formControlName="piso" id="piso" required>
+            </div>
+
+          </div>
+  
+          <div class="row">
+            <div class="col-md-3 mb-3">
+              <label for="pais">País</label>
+              <input type="text" class="form-control" formControlName="pais" id="pais" required>
+            </div>
+  
+            <div class="col-md-3 mb-3">
+              <label for="provincia">Provincia</label>
+              <input type="text" class="form-control" formControlName="provincia" id="provincia" required>
+            </div>
+
+            <div class="col-md-3 mb-3">
+              <label for="ciudad">Ciudad</label>
+              <input type="text" class="form-control" formControlName="ciudad" id="ciudad" required>
+            </div>
+  
+            <div class="col-md-3 mb-3">
+              <label for="codigo_postal">Código Postal</label>
+              <input type="text" class="form-control" formControlName="codigo_postal" id="codigo_postal" required>
+            </div>
+
+            <div class="form-check mb-4">
+              <input class="form-check-input" type="checkbox" id="guardarDireccion" formControlName="guardarDireccion">
+              <label class="form-check-label" for="guardarDireccion">
+                Guardar esta dirección para futuros pedidos
+              </label>
+            </div>
+          </div>
+  
+          <hr class="mb-4">
+  
+          <h4 class="mb-3">Método de pago</h4>
+          <div class="form-check">
+            <input id="tarjeta"
+              name="metodo_pago" 
+              type="radio" 
+              class="form-check-input"
+              [value]="'tarjeta'"
+              formControlName="metodo_pago"
+              required>
+            <label class="form-check-label" for="tarjeta">Tarjeta de crédito</label>
+          </div>
+          <div class="form-check">
+            <input id="paypal" 
+              name="metodo_pago" 
+              type="radio" 
+              class="form-check-input" 
+              [value]="'paypal'"
+              formControlName="metodo_pago"
+              required>
+            <label class="form-check-label" for="paypal">PayPal</label>
+          </div>
+          <!--<div class="form-check">
+            <input id="cash" name="paymentMethod" type="radio" class="form-check-input" value="cash" required>
+            <label class="form-check-label" for="cash">Pago contra entrega</label>
+          </div>-->
+  
+          <!--<div class="mb-3 mt-3">
+            <label for="paymentNotes">Notas para el pedido (opcional)</label>
+            <textarea class="form-control" id="paymentNotes" rows="2" placeholder="Instrucciones especiales..."></textarea>
+          </div>-->
+  
+          <hr class="mb-4">
+          <button class="btn btn-primary btn-lg w-100" type="submit">Finalizar compra</button>
+        </form>
+      </div>
+    </div>
+  </div>

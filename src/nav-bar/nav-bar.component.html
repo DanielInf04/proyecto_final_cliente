@@ -1,0 +1,80 @@
+<app-promo-banner></app-promo-banner>
+<nav class="navbar navbar-expand-lg bg-white shadow-sm px-3 py-3">
+    <div class="container-fluid">
+        <div class="contenedor">
+            <!-- Sección de Logo y Navegación -->
+            <div class="nav-bar-principal d-flex align-items-center">
+                <!-- Botón de Menú en móviles -->
+                <button class="navbar-toggler" type="button"  aria-label="Toggle navigation"> <!-- (click)="mostrarMenu = !mostrarMenu" -->
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <a [routerLink]="['/']">
+                    <img src="logo.png" alt="Logo" width="80">
+                </a>
+                <div class="collapse navbar-collapse" id="navbar">
+                    <ul class="navbar-nav ms-3">
+                        <li class="nav-item">
+                            <a [routerLink]="['']" routerLinkActive="active" class="nav-link" [routerLinkActiveOptions]="{ exact: true }">Descubre</a>
+                        </li>
+                        <li class="nav-item">
+                            <a [routerLink]="['offers']" routerLinkActive="active" class="nav-link">Ofertas</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle fw-semibold" href="#" role="button" data-bs-toggle="dropdown">
+                              Categorías
+                            </a>
+                            <ul class="dropdown-menu shadow-sm border-0 rounded-3 mt-2">
+                              <li *ngFor="let categoria of categorias">
+                                <a class="dropdown-item py-2 px-3 text-dark" [routerLink]="['/categoria', categoria.id]">
+                                  {{ categoria.nombre }}
+                                </a>
+                              </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                
+            </div>
+
+            <!-- Barra de búsqueda -->
+            <div class="nav-bar-secundario d-flex justify-content-center">
+                <form class="search-bar position-relative w-100" (submit)="onBuscar(searchInput.value); $event.preventDefault()">
+                <input #searchInput
+                    class="form-control rounded-pill px-4 pe-5"
+                    type="text"
+                    placeholder="Buscar producto" />
+            
+                <button type="submit" class="btn position-absolute end-0 me-2">
+                    <img src="images/icons/search_icon.png" alt="Buscar" width="24">
+                    
+                </button>
+                </form>
+            </div>
+
+            <!-- Sección de Cuenta y Carrito -->
+            <div class="nav-bar-adicional d-flex justify-content-end">
+                <div class="account_cart">
+                    
+                    <a (click)="abrirCuenta()" class="d-flex align-items-center text-dark me-3">
+                        <img src="images/icons/user_icon.png" alt="Cuenta" width="24">
+                        <span class="ms-2 d-none d-lg-inline">{{ userName || 'Cuenta' }}</span>
+                    </a>
+
+                    <a (click)="abrirCarrito()" class="d-flex align-items-center text-dark" role="button">
+                        <div class="position-relative">
+                          <!--<img src="images/icons/cart_icon.png" alt="Carrito de compra" width="24">-->
+                          <img src="images/icons/cesta_compra.svg" alt="Carrito de compra" width="22">
+                      
+                          <span *ngIf="cartCount > 0"
+                                class="position-absolute top-0 start-100 translate-middle bg-danger text-white d-flex align-items-center justify-content-center"
+                                style="width: 20px; height: 20px; border-radius: 50%; font-size: 0.75rem;">
+                            {{ cartCount }}
+                          </span>
+                        </div>
+                        <span class="ms-2 d-none d-lg-inline">Carrito</span>
+                      </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>

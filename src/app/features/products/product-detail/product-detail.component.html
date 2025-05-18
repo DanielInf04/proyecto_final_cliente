@@ -1,0 +1,194 @@
+<div
+  class="toast-container position-fixed top-0 start-50 translate-middle-x p-3"
+  style="z-index: 1080"
+  *ngIf="errorMessage"
+>
+  <div class="toast show align-items-center text-white bg-danger border-0 shadow rounded" role="alert">
+    <div class="d-flex align-items-center">
+      <div class="toast-body d-flex align-items-center gap-2">
+        <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+        <div>{{ errorMessage }}</div>
+      </div>
+      <button
+        type="button"
+        class="btn-close btn-close-white me-2 m-auto"
+        (click)="errorMessage = null"
+        aria-label="Cerrar"
+      ></button>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="producto" class="container my-4">
+    <h2 class="mb-3">{{ producto.nombre }}</h2>
+  
+    <div class="row">
+      <div class="col-md-5">
+        
+        <!-- Imagen principal -->
+        <div class="mb-3" *ngIf="imagenActual">
+          <img
+            [src]="imagenActual"
+            class="img-fluid rounded"
+            style="width: 100%; height: 400px; object-fit: contain;"
+            alt="Imagen principal del producto">
+        </div>
+  
+        <!-- Miniaturas -->
+        <div class="d-flex gap-2 overflow-auto" *ngIf="imagenesPreview.length">
+          <img
+            *ngFor="let img of imagenesPreview"
+            [src]="img"
+            (click)="cambiarImagen(img)"
+            class="rounded"
+            style="height: 80px; width: auto; cursor: pointer; object-fit: cover;"
+            alt="Miniatura"
+          >
+        </div>
+  
+      </div>
+  
+      <div class="col-md-6">
+        <p><strong>Descripción:</strong> {{ producto.descripcion }}</p>
+        <!-- Precio con lógica de oferta -->
+        <div class="mb-2">
+
+          <!-- Si tiene oferta -->
+          <ng-container *ngIf="producto.oferta; else precioNormal">
+            <p class="mb-1">
+              <span class="text-muted text-decoration-line-through">
+                {{ producto.oferta.precio_original_con_iva }} €
+              </span>
+              <span class="fw-bold text-danger ms-2 fs-5">
+                {{ producto.oferta.precio_oferta_con_iva }} €
+              </span>
+              <span class="badge bg-success ms-2">
+                -{{ producto.oferta.descuento_porcentaje }}%
+              </span>
+            </p>
+            <small class="text-muted">(IVA incluido)</small>
+          </ng-container>
+
+          <!-- Precio normal -->
+          <ng-template #precioNormal>
+            <p class="fw-bold text-success fs-3 mb-1">
+              {{ producto.precio_con_iva }} €
+            </p>
+            <small class="text-muted">(IVA incluido)</small>
+          </ng-template>
+        </div>
+  
+        <div class="input-group mt-3" style="max-width: 150px;">
+          <button class="btn btn-outline-secondary" type="button" (click)="cambiarCantidad(-1)">−</button>
+          <input type="number" class="form-control text-center" readonly [(ngModel)]="cantidad" min="1" />
+          <button class="btn btn-outline-secondary" type="button" (click)="cambiarCantidad(1)">+</button>
+        </div>
+
+        <!-- Si es empresa -->
+        <button
+          *ngIf="userRole === 'empresa'"
+          class="btn btn-danger mt-3"
+          disabled>
+          No disponible
+        </button>
+
+        <!-- Botón si hay stock -->
+        <button 
+          *ngIf="userRole !== 'empresa' && producto.stock > 0" 
+          class="btn btn-primary mt-3" 
+          (click)="addToCart()">
+          Añadir al carrito
+        </button>
+
+        <!-- Botón cuando no hay stock -->
+         <button
+          *ngIf="userRole !== 'empresa' && producto.stock === 0"
+          class="btn btn-danger mt-3"
+          disabled>
+          Agotado
+         </button>
+
+      </div>
+    </div>
+
+    <div class="mt-5">
+      <h4 class="mb-4 fw-bold text-center">Reseñas de clientes</h4>
+    
+      <ng-container *ngIf="resenyas.length > 0; else sinResenyas">
+        <div *ngFor="let res of resenyas" class="review-card mb-4 p-4 shadow-sm rounded">
+          
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="mb-0 fw-semibold">{{ res.cliente?.nombre || 'Usuario' }}</h6>
+            <small class="text-muted">{{ res.fecha | date: 'mediumDate' }}</small>
+          </div>
+    
+          <div class="rating mb-3">
+            <ng-container *ngFor="let star of [1, 2, 3, 4, 5]">
+              <i class="bi"
+                 [ngClass]="{
+                   'bi-star-fill text-warning': star <= res.valoracion,
+                   'bi-star text-secondary': star > res.valoracion
+                 }"></i>
+            </ng-container>
+          </div>
+    
+          <blockquote class="blockquote mb-0">
+            <p class="mb-0 fst-italic">"{{ res.comentario }}"</p>
+          </blockquote>
+    
+        </div>
+      </ng-container>
+    
+      <ng-template #sinResenyas>
+        <p class="text-center text-muted fst-italic">Este producto aún no tiene reseñas.</p>
+      </ng-template>
+    </div>
+
+    <!-- Productos relacionados -->
+    <div class="mt-5" *ngIf="recomendados.length > 0">
+      <h4 class="mb-4 fw-bold text-center">Productos relacionados</h4>
+
+      <div class="row row-cols-2 row-cols-md-4 g-4">
+        <div *ngFor="let producto of recomendados" class="col">
+          <div class="card h-100 shadow-sm" [routerLink]="['/producto', producto.id]" style="cursor: pointer;">
+            
+            <!-- Imagen -->
+            <div class="p-3 text-center" style="height: 180px;">
+              <img *ngIf="producto.imagenes?.length"
+                  [src]="producto.imagenes[0]"
+                  alt="{{ producto.nombre }}"
+                  class="img-fluid h-100 object-fit-contain">
+            </div>
+
+            <!-- Cuerpo -->
+            <div class="card-body d-flex flex-column justify-content-between text-center">
+              <h6 class="card-title mb-2 text-truncate">{{ producto.nombre }}</h6>
+
+              <!-- Valoración -->
+              <div class="rating mb-2">
+                <ng-container *ngIf="producto.valoracion_promedio !== null; else sinValoracionRecom">
+                  <ng-container *ngFor="let estrella of [1, 2, 3, 4, 5]">
+                    <i class="bi"
+                      [ngClass]="{
+                        'bi-star-fill text-warning': estrella <= producto.valoracion_promedio,
+                        'bi-star-half text-warning': estrella - 0.5 === producto.valoracion_promedio,
+                        'bi-star text-muted': estrella > producto.valoracion_promedio
+                      }"></i>
+                  </ng-container>
+                  <small class="text-muted ms-1">({{ producto.valoracion_promedio }})</small>
+                </ng-container>
+                <ng-template #sinValoracionRecom>
+                  <small class="text-muted">Sin valoraciones</small>
+                </ng-template>
+              </div>
+
+              <!-- Precio -->
+              <p class="text-success fw-bold mb-0">{{ producto.precio_con_iva }} €</p>
+              <small class="text-muted">IVA incluido</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>

@@ -1,0 +1,158 @@
+<ng-container *ngIf="!isLoading">
+  <h3 class="fw-bold mb-1 mt-4">
+    {{ pedido ? 'Detalles del pedido' : 'Pedido no encontrado' }}
+  </h3>
+  <p class="text-muted">
+    {{ pedido ? 'Consulta los detalles del pedido seleccionado.' : 'No se ha encontrado el pedido.' }}
+  </p>
+</ng-container>
+
+<div *ngIf="!isLoading && pedido">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h5 class="fw-bold">{{ pedido.fecha_pedido | date: 'd \'de\' MMMM \'de\' y' }}</h5>
+      <small class="text-muted">Pedido Online — {{ pedido.fecha_pedido | date:'HH:mm' }}</small>
+    </div>
+    <div>
+      <span class="fw-semibold">Pedido #{{ pedido.id }}</span>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- Izquierda: Detalles -->
+    <div class="col-lg-8">
+      <div *ngFor="let empresa of pedido.empresas" class="p-4 rounded-4 mb-4" style="background-color: #f8f9fa; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <span class="fw-semibold">{{ empresa.nombre }}</span>
+          </div>
+          <span class="badge text-uppercase ms-auto p-2"
+            [ngClass]="{
+              'bg-warning text-dark': empresa.estado_envio === 'pendiente',
+              'bg-info text-dark': empresa.estado_envio === 'preparando',
+              'bg-primary': empresa.estado_envio === 'enviado',
+              'bg-success': empresa.estado_envio === 'entregado',
+              'bg-danger': empresa.estado_envio === 'cancelado'
+            }">
+            {{ empresa.estado_envio | titlecase }}
+          </span>
+        </div>
+
+        <!-- Productos -->
+        <div *ngFor="let prod of empresa.productos" class="d-flex align-items-start mb-4">
+          <img [src]="prod.imagen" alt="{{ prod.nombre }}" class="me-3 rounded" style="width: 100px; height: auto;">
+          <div class="flex-grow-1">
+            <p class="fw-semibold mb-1">{{ prod.nombre }}</p>
+            <small class="text-muted d-block mb-1">Cantidad: {{ prod.cantidad }}</small>
+            <span class="fw-bold">{{ prod.precio_unitario }} €</span>
+
+            <div class="mt-2">
+              <a [routerLink]="['/producto', prod.producto_id]" class="btn btn-sm btn-outline-success me-2">Ver detalles del producto</a>
+              <button *ngIf="empresa.estado_envio === 'entregado' && prod.valoracion_cliente === null"
+                      (click)="openReviewModal(prod.producto_id, pedido.cliente_id)"
+                      class="btn btn-sm btn-outline-primary">
+                Valorar el producto
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <a href="#" class="text-decoration-underline small text-muted">Solicitar factura</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Derecha: Resumen -->
+    <div class="col-lg-4">
+      <div class="p-4 rounded-4" style="background-color: #f1f8f6; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+        <h6 class="fw-bold mb-3">Resumen del pedido</h6>
+        <!--<p class="mb-2"><strong>Pedido:</strong> {{ pedido.id }}</p>-->
+        <div *ngFor="let empresa of pedido.empresas">
+          <div *ngFor="let prod of empresa.productos" class="d-flex justify-content-between">
+            <span>{{ prod.nombre | slice:0:35 }}...</span>
+            <span>{{ prod.precio_unitario }} €</span>
+          </div>
+        </div>
+        <hr>
+        <div class="d-flex justify-content-between fw-bold">
+          <span>Total</span>
+          <span>{{ pedido.total }} €</span>
+        </div>
+        <div class="mt-4 text-center">
+          <button class="btn btn-outline-success btn-sm">Imprimir detalle pedido</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Información envío y pago -->
+    <div class="mt-5 mb-5">
+    <h6 class="fw-bold mb-3">Información de envío y pago</h6>
+        <div class="row g-4">
+            <div class="col-md-6">
+            <div class="p-4 border rounded-3">
+                <h6 class="fw-bold mb-2">Dirección de facturación</h6>
+                <p class="mb-0">{{ pedido.nombre_completo }}</p>
+                <p class="mb-0">{{ pedido.direccion.calle }}</p>
+                <p class="mb-0">
+                p{{ pedido.direccion.puerta }}, piso {{ pedido.direccion.piso }}
+                </p>
+                <p class="mb-0">
+                {{ pedido.direccion.codigo_postal }} {{ pedido.direccion.poblacion }} / {{ pedido.direccion.pais }}
+                </p>
+            </div>
+            </div>
+            <div class="col-md-6">
+            <div class="p-4 border rounded-3">
+                <h6 class="fw-bold mb-2">Método de pago</h6>
+                <p class="mb-0">{{ pedido.metodo_pago | titlecase }}</p>
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="isLoading" class="text-center py-5">
+  <div class="spinner-border" role="status"><span class="visually-hidden">Cargando...</span></div>
+</div>
+
+<!-- Modal para dejar reseña -->
+<div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="reviewModalLabel">Dejar reseña</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="mb-3 text-center">
+              <label class="form-label fw-bold">Calificación</label>
+              <div class="star-rating d-flex justify-content-center gap-2">
+                <i class="bi"
+                   *ngFor="let star of [1,2,3,4,5]"
+                   [ngClass]="{
+                     'bi-star-fill': star <= reviewData.valoracion,
+                     'bi-star': star > reviewData.valoracion,
+                     'text-warning': star <= reviewData.valoracion,
+                     'text-secondary': star > reviewData.valoracion
+                   }"
+                   class="fs-2 pointer"
+                   (click)="setRating(star)">
+                </i>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="comentario" class="form-label">Comentario</label>
+              <textarea class="form-control" id="comentario" rows="3" [(ngModel)]="reviewData.comentario" name="comentario"></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-primary" (click)="submitReview()">Enviar reseña</button>
+        </div>
+      </div>
+    </div>
+  </div>

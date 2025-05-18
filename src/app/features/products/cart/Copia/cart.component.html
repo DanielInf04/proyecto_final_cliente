@@ -1,0 +1,139 @@
+<div class="container py-5">
+    <h1 class="mb-5" *ngIf="productos.length === 0">Tu carrito está vacío</h1>
+    <h1 class="mb-5" *ngIf="productos.length > 0">TU carrito de compra</h1>
+    <div class="row" *ngIf="productos.length > 0">
+      <div class="col-lg-8">
+        <!-- Artículos del carrito -->
+        <div class="card mb-4">
+          <div class="card-body">
+            <div *ngFor="let producto of productos" class="row cart-item mb-3">
+              <div class="col-md-3">
+                <img [src]="producto.imagen_url" 
+                    [alt]="producto.nombre" 
+                    class="img-fluid rounded" 
+                    style="object-fit: cover; width: 100%; height: auto;">
+              </div>
+              <div class="col-md-5">
+                <h5 class="card-title">{{ producto.nombre }}</h5>
+                <p class="text-muted">Categoría: {{ producto.categoria }}</p>
+              </div>
+              <div class="col-md-2">
+                <div class="input-group">
+                  <button 
+                    class="btn btn-outline-secondary btn-sm" 
+                    type="button"
+                    (click)="cambiarCantidad(producto, -1)">
+                    -
+                  </button>
+                  <input style="max-width:100px" type="text" class="form-control form-control-sm text-center quantity-input" [value]="producto.cantidad" readonly>
+                  <button 
+                    class="btn btn-outline-secondary btn-sm" 
+                    type="button"
+                    (click)="cambiarCantidad(producto, 1)">
+                    +
+                  </button>
+                </div>
+              </div>
+              <div class="col-md-2 text-end">
+                <p class="fw-bold">{{ producto.precio_con_iva | currency:'EUR':'symbol' }}</p>
+                <button 
+                  class="btn btn-sm btn-outline-danger"
+                  (click)="eliminarProducto(producto)">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+  
+        <!-- Botón de seguir comprando -->
+        <div class="text-start mb-4">
+          <a routerLink="/productos" class="btn btn-outline-primary">
+            <i class="bi bi-arrow-left me-2"></i>Seguir comprando
+          </a>
+        </div>
+      </div>
+  
+      <div class="col-lg-4">
+        <!-- Resumen del pedido -->
+        <div class="card cart-summary">
+          <div class="card-body">
+            <h5 class="card-title mb-4">Resumen del pedido</h5>
+            <div class="d-flex justify-content-between mb-3">
+              <span>Subtotal</span>
+              <span>{{ subtotal | currency:'EUR':'symbol' }}</span>
+            </div>
+            <div class="d-flex justify-content-between mb-3">
+              <span>Envío</span>
+              <span>{{ envio | currency:'EUR':'symbol' }}</span>
+            </div>
+            <div *ngFor="let tipo of ivaPorTipo" class="d-flex justify-content-between mb-3">
+              <span>IVA {{ tipo.porcentaje }}%</span>
+              <span>{{ tipo.total| currency:'EUR':'symbol' }}</span>
+            </div>
+
+            <div *ngIf="cuponAplicado" class="d-flex justify-content-between mb-3 text-success">
+              <span>Descuento {{ cuponAplicado.porcentaje_descuento }}%</span>
+              <span>-{{ (total - totalConDescuento) | currency:'EUR':'symbol' }}</span>
+            </div>
+            <hr>
+            <div class="d-flex justify-content-between mb-4" *ngIf="cuponAplicado">
+              <strong>Total con descuento</strong>
+              <strong class="text-success">{{ totalConDescuento | currency:'EUR':'symbol' }}</strong>
+            </div>
+            
+            <div class="d-flex justify-content-between mb-4" *ngIf="!cuponAplicado">
+              <strong>Total</strong>
+              <strong>{{ total | currency:'EUR':'symbol' }}</strong>
+            </div>
+            <!--<div class="d-flex justify-content-between mb-4">
+              <strong>Total</strong>
+              <strong>{{ total | currency:'EUR':'symbol' }}</strong>
+            </div>-->
+            <button class="btn btn-primary w-100" [routerLink]="['/checkout']">Proceder al pago</button>
+          </div>
+        </div>
+  
+        <!-- Código promocional -->
+
+        <!-- Código promocional -->
+        <div class="card mt-4">
+          <div class="card-body">
+            <h5 class="card-title mb-3">Aplicar código promocional</h5>
+
+            <div class="input-group mb-3">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Introduce el código promocional"
+                [(ngModel)]="codigoPromocional"
+                name="codigoPromocional"
+              />
+              <button class="btn btn-outline-secondary" type="button" (click)="aplicarCupon()">
+                Aplicar
+              </button>
+            </div>
+
+            <div *ngIf="cuponAplicado" class="text-success">
+              <strong>¡Descuento aplicado correctamente!</strong>
+              <!--Cupón aplicado: <strong>{{ cuponAplicado.codigo }}</strong> - Descuento de <strong>{{ cuponAplicado.porcentaje_descuento }}%</strong>-->
+            </div>
+
+            <div *ngIf="errorCupon" class="text-danger">
+              {{ errorCupon }}
+            </div>
+          </div>
+        </div>
+
+        <!--<div class="card mt-4">
+          <div class="card-body">
+            <h5 class="card-title mb-3">Aplicar código promocional</h5>
+            <div class="input-group mb-3">
+              <input type="text" class="form-control" placeholder="Introduce el código promocional">
+              <button class="btn btn-outline-secondary" type="button">Aplicar</button>
+            </div>
+          </div>
+        </div>-->
+      </div>
+    </div>
+  </div>

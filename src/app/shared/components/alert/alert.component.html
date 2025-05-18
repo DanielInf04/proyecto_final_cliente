@@ -1,0 +1,7 @@
+<div *ngIf="message" 
+     [ngClass]="{'fade-out': closing}" 
+     class="alert alert-{{ type }} alert-dismissible fade show" 
+     role="alert">
+  {{ message }}
+  <button type="button" class="btn-close" (click)="close()" aria-label="Close"></button>
+</div>

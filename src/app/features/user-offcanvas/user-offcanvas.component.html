@@ -1,0 +1,53 @@
+<div class="offcanvas offcanvas-end px-4 pt-4 pb-5"
+     tabindex="-1" 
+     id="accountOffcanvas"
+     style="border-top-left-radius: 1rem; border-bottom-left-radius: 1rem;">
+  
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h5 class="fw-bold mb-0">Mi cuenta</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+  </div>
+
+  <!-- Si NO está logueado -->
+  <div *ngIf="!isLoggedIn">
+    <div class="d-grid gap-2 mb-4">
+      <button class="btn btn-success fw-semibold py-2" (click)="onLogin()">Iniciar sesión</button>
+      <button class="btn btn-outline-dark fw-semibold py-2" (click)="onRegister()">Registro</button>
+    </div>
+    <small class="text-muted mb-4 d-block">
+      Regístrate con tu cuenta para ver tus pedidos
+    </small>
+  </div>
+
+  <!-- Si ESTÁ logueado -->
+  <div *ngIf="isLoggedIn">
+    <div class="mb-4">
+      <h4 class="fw-bold mb-0">{{ userName }}</h4>
+      <small class="text-muted text-capitalize">{{ userRole }}</small>
+    </div>
+
+    <ul class="list-unstyled mt-3">
+      <li class="d-flex align-items-center gap-2 py-2" (click)="irACuenta()">
+        <img src="images/icons/account_offcanva/user_icon.png" alt="Mi cuenta" width="20" height="20">
+        <span class="clickable-item">Mi cuenta</span>
+      </li>
+      
+      <li class="d-flex align-items-center gap-2 py-2" (click)="irAPedidos()">
+        <img src="images/icons/account_offcanva/shopping-cart.png" alt="Mis pedidos" width="20" height="20">
+        <span class="clickable-item">Mis pedidos</span>
+      </li>
+
+      <li *ngIf="userRole === 'admin' || userRole === 'empresa'" (click)="irAPanel()" class="d-flex align-items-center gap-2 cursor-pointer py-2">
+        <img src="images/icons/account_offcanva/grid.png" alt="Panel" width="20" height="20">
+        <span class="clickable-item">Panel de control</span>
+      </li>
+
+      <hr class="my-3" />
+
+      <li class="d-flex align-items-center gap-2 cursor-pointer py-2 fw-semibold">
+        <img src="images/icons/account_offcanva/logout.png" alt="Cerrar Sesión" width="20" height="20">
+        <span class="clickable-item" (click)="onLogout()">Cerrar sesión</span>
+      </li>
+    </ul>
+  </div>
+</div>

@@ -1,0 +1,38 @@
+<h3 class="fill-remaining-space mt-3 mb-3">Crear Cupón</h3>
+
+<div class="container">
+  <form [formGroup]="myForm" (ngSubmit)="onSubmit(myForm.value)">
+    
+    <!-- Código del cupón -->
+    <div class="form-group">
+      <label for="codigo">Código del Cupón:</label>
+      <input type="text" class="form-control" formControlName="codigo" id="codigo" />
+    </div>
+
+    <!-- Porcentaje de descuento -->
+    <div class="form-group">
+      <label for="porcentaje_descuento">Porcentaje de Descuento:</label>
+      <input type="number" min="1" max="100" class="form-control" formControlName="porcentaje_descuento" id="porcentaje_descuento" />
+    </div>
+
+    <!-- Solo nuevos usuarios -->
+    <div class="form-group form-check">
+      <input type="checkbox" class="form-check-input" formControlName="solo_nuevos_usuarios" id="solo_nuevos_usuarios" />
+      <label class="form-check-label" for="solo_nuevos_usuarios">Solo Nuevos Usuarios</label>
+    </div>
+
+    <!-- Fecha de expiración -->
+    <div class="form-group">
+      <label for="fecha_expiracion">Fecha de Expiración:</label>
+      <input type="date" class="form-control" formControlName="fecha_expiracion" id="fecha_expiracion" />
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-4" [disabled]="myForm.invalid">
+      Crear Cupón
+    </button>
+  </form>
+</div>
+
+<div *ngIf="errorMessage" class="alert alert-danger mt-3">
+  {{ errorMessage }}
+</div>

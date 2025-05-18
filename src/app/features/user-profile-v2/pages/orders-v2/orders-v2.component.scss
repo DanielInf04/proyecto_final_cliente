@@ -1,0 +1,32 @@
+.order-card-right {
+    background-color: #fff;
+    border: 1px solid #e4e4e4;
+  
+    h6 {
+      font-size: 1rem;
+      color: #333;
+    }
+  
+    .bi {
+      font-size: 1rem;
+      margin-right: 2px;
+    }
+  
+    .btn-outline-dark {
+      border-color: #555;
+      color: #333;
+  
+      &:hover {
+        background-color: #333;
+        color: #fff;
+      }
+    }
+  }
+
+  .flex-column {
+    flex-direction: column !important;
+  
+    .col-md-6 {
+      width: 100% !important;
+    }
+  }

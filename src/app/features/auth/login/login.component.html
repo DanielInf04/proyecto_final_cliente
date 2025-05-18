@@ -1,0 +1,81 @@
+<div
+  class="toast-container position-fixed top-0 start-50 translate-middle-x p-3"
+  style="z-index: 1080"
+  *ngIf="errorMessage"
+>
+  <div class="toast align-items-center text-white bg-danger border-0 show shadow" role="alert">
+    <div class="d-flex">
+      <div class="toast-body">
+        {{ errorMessage }}
+      </div>
+      <button
+        type="button"
+        class="btn-close btn-close-white me-2 m-auto"
+        (click)="errorMessage = null"
+        aria-label="Cerrar"
+      ></button>
+    </div>
+  </div>
+</div>
+
+<div class="container min-vh-100 d-flex align-items-center justify-content-center">
+  <main class="form-signin w-100" style="max-width: 330px;">
+    <form *ngIf="isReady" (ngSubmit)="onLogin()">
+      <h1 class="h3 mb-3 fw-normal text-center">Iniciar Sesión</h1>
+
+      <div class="input-group mb-2">
+        <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+        <div class="form-floating flex-grow-1">
+          <input type="email" class="form-control" id="email" [(ngModel)]="email" placeholder="name@example.com" name="email">
+          <label for="email">Dirección de correo</label>
+        </div>
+      </div>
+
+      <div class="input-group mb-2">
+        <span class="input-group-text" (click)="togglePasswordVisibility()" style="cursor: pointer;">
+          <i [class]="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+        </span>
+        <div class="form-floating flex-grow-1 pt-0">
+          <input [type]="showPassword ? 'text' : 'password'" class="form-control"
+                id="password" [(ngModel)]="password" name="password"
+                placeholder="Password">
+          <label for="password">Contraseña</label>
+        </div>
+      </div>
+
+      <!--<div class="form-check text-start my-3">
+        <input class="form-check-input" type="checkbox" value="remember-me" id="checkDefault">
+        <label class="form-check-label" for="checkDefault">
+          Recuérdame
+        </label>
+      </div>-->
+
+      <div id="googleBtn" class="mb-3 text-center"></div>
+
+      <button class="btn btn-success w-100 py-2" type="submit">Accceder</button>
+      <button class="btn btn-success w-100 py-2 mt-4" [routerLink]="['/register']">Crear Cuenta</button>
+    </form>
+  </main>
+</div>
+
+<!--<form *ngIf="isReady" (ngSubmit)="onLogin()" class="p-4 border rounded shadow-sm" style="max-width: 400px; margin: auto;">
+    <h5 class="mb-4 text-center">Iniciar Sesión</h5>
+  
+    <div class="mb-3">
+      <label for="email" class="form-label">Email</label>
+      <input type="email" class="form-control" id="email" [(ngModel)]="email" name="email" required>
+    </div>
+  
+    <div class="mb-3">
+      <label for="password" class="form-label">Contraseña</label>
+      <input type="password" class="form-control" id="password" [(ngModel)]="password" name="password" required>
+    </div>
+  
+    <div id="googleBtn" class="mb-3 text-center"></div>
+  
+    <div class="d-flex justify-content-between">
+      <button type="button" class="btn btn-primary" [routerLink]="['/register']">Crear Cuenta</button>
+      <button type="submit" class="btn btn-success">Entrar</button>
+      <button type="button" class="btn btn-danger" (click)="onLogout()">Cerrar Sesión</button>
+    </div>
+  </form>-->

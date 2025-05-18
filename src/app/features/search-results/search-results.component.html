@@ -1,0 +1,151 @@
+<!--<h2 class="text-center my-4">Nuestros productos</h2>-->
+
+<!-- Mensaje si no hay productos -->
+<div *ngIf="!cargando && resultados.length === 0" class="my-5 px-3">
+  <h3 class="fw-bold">Tu búsqueda: {{ termino }}</h3>
+  <p class="fw-semibold text-danger mt-2">
+    No hemos encontrado productos que coincidan con tu búsqueda. Intenta con otras palabras clave o revisa la ortografía.
+  </p>
+
+  <div class="text-start" style="max-width: 600px;">
+    <h5 class="mt-4">Nuestras sugerencias de búsqueda para ti:</h5>
+    <ul>
+      <li>Revisa tu entrada para ver si hay errores tipográficos.</li>
+      <li>Prueba con palabras relacionadas para tu término de búsqueda.</li>
+      <li>Revisa nuestras categorías y refina tu búsqueda hasta el producto deseado.</li>
+    </ul>
+  </div>
+
+  <!-- Recomendaciones -->
+  <div class="mt-5">
+    <h4 class="mb-3">También puede interesarte</h4>
+
+    <!-- Skeleton loader mientras se cargan -->
+    <div class="d-flex gap-3 overflow-auto" *ngIf="cargandoRecomendados">
+      <div class="card flex-shrink-0" style="width: 250px;" *ngFor="let _ of [1,2,3,4]">
+        <div class="p-2 text-center">
+          <div class="placeholder col-12 bg-secondary" style="height: 220px;"></div>
+        </div>
+        <div class="card-body">
+          <p class="placeholder-glow mb-2">
+            <span class="placeholder col-8"></span>
+          </p>
+          <p class="placeholder-glow mb-2">
+            <span class="placeholder col-6"></span>
+            <span class="placeholder col-4"></span>
+          </p>
+          <span class="placeholder col-5"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Productos recomendados reales -->
+    <div class="d-flex gap-3 overflow-auto pt-2" *ngIf="!cargandoRecomendados && recomendados.length > 0">
+      <div *ngFor="let producto of recomendados"
+           class="card product-card h-100 shadow-sm flex-shrink-0"
+           style="width: 250px; cursor: pointer;"
+           (click)="verProducto(producto.id)">
+
+           <div class="image-container p-2 text-center" style="height: 180px;">
+            <img *ngIf="producto.imagenes?.length"
+                 [src]="producto.imagenes[0]"
+                 alt="{{ producto.nombre }}"
+                 class="img-fluid h-100 object-fit-contain">
+          </div>
+
+        <div class="card-body d-flex flex-column justify-content-between">
+          <h6 class="card-title">{{ producto.nombre }}</h6>
+
+          <div class="rating mb-2">
+            <ng-container *ngIf="producto.valoracion_promedio !== null; else sinValoracionRecom">
+              <ng-container *ngFor="let estrella of [1, 2, 3, 4, 5]">
+                <i class="bi"
+                   [ngClass]="{
+                     'bi-star-fill text-warning': estrella <= producto.valoracion_promedio,
+                     'bi-star-half text-warning': estrella - 0.5 === producto.valoracion_promedio,
+                     'bi-star text-muted': estrella > producto.valoracion_promedio
+                   }"></i>
+              </ng-container>
+              <small class="text-muted ms-1">({{ producto.valoracion_promedio }})</small>
+            </ng-container>
+            <ng-template #sinValoracionRecom>
+              <small class="text-muted">Sin valoraciones</small>
+            </ng-template>
+          </div>
+
+          <p class="text-success fw-bold mb-0">
+            {{ producto.precio_con_iva }} €
+          </p>
+
+          <small class="text-muted">IVA incluido</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row mt-4">
+    <div class="col-6 col-sm-6 col-md-4 col-lg-3 mb-4" *ngFor="let producto of resultados">
+      <div (click)="verProducto(producto.id)" class="card product-card h-100 shadow-sm">
+
+        <!-- Imagen -->
+        <div class="image-container p-2 text-center">
+          <img *ngIf="producto.imagenes?.length"
+               [src]="producto.imagenes[0]"
+               alt="{{ producto.nombre }}"
+               class="img-fluid">
+        </div>
+
+        <!-- Cuerpo de la card -->
+        <div class="card-body d-flex flex-column justify-content-between">
+          
+          <!-- Título -->
+          <h5 class="card-title">{{ producto.nombre }}</h5>
+          
+          <!-- Valoraciones -->
+          <div class="rating mb-2">
+            <ng-container *ngIf="producto.valoracion_promedio !== null; else sinValoracion">
+              <ng-container *ngFor="let estrella of [1, 2, 3, 4, 5]">
+                <i class="bi"
+                   [ngClass]="{
+                     'bi-star-fill text-warning': estrella <= producto.valoracion_promedio,
+                     'bi-star-half text-warning': estrella - 0.5 === producto.valoracion_promedio,
+                     'bi-star text-muted': estrella > producto.valoracion_promedio
+                   }"></i>
+              </ng-container>
+              <small class="text-muted ms-1">({{ producto.valoracion_promedio }})</small>
+            </ng-container>
+            <ng-template #sinValoracion>
+              <small class="text-muted">Sin valoraciones</small>
+            </ng-template>
+          </div>
+
+          <!-- Precios -->
+          <div class="price mb-2">
+            <ng-container *ngIf="producto.oferta; else precioNormal">
+              <span class="text-muted text-decoration-line-through me-2">
+                {{ producto.oferta.precio_original_con_iva }} €
+              </span>
+              <span class="fw-bold text-danger">
+                {{ producto.oferta.precio_oferta_con_iva }} €
+              </span>
+              <span class="badge bg-success discount-badge ms-2">
+                -{{ producto.oferta.descuento_porcentaje }}%
+              </span>
+            </ng-container>
+
+            <ng-template #precioNormal>
+              <span class="text-success fw-bold">
+                {{ producto.precio_con_iva }} €
+              </span>
+            </ng-template>
+          </div>
+
+          <small class="text-muted">IVA incluido</small>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

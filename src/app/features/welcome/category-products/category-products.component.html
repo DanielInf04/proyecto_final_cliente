@@ -1,0 +1,108 @@
+<div class="container mt-4">
+
+  <div *ngIf="!isLoading && productos.length > 0" class="container mt-4 mb-4">
+    <h2 class="text-center">Explora productos de {{ categoriaNombre }}</h2>
+  </div>
+
+  <!-- Skeleton Loader -->
+  <div *ngIf="isLoading" class="container mt-4 mb-4">
+    <div class="row">
+      <div class="col-6 col-sm-6 col-md-4 col-lg-3 mb-4" *ngFor="let n of [1,2,3,4,5,6,7,8]">
+        <div class="card product-card h-100 shadow-sm">
+          <div class="p-2">
+            <div class="bg-secondary bg-opacity-25 rounded w-100" style="height: 180px;"></div>
+          </div>
+          <div class="card-body">
+            <h5 class="placeholder-glow">
+              <span class="placeholder col-8"></span>
+            </h5>
+            <p class="placeholder-glow mb-2">
+              <span class="placeholder col-6"></span>
+            </p>
+            <p class="placeholder-glow mb-2">
+              <span class="placeholder col-3"></span>
+            </p>
+            <span class="placeholder col-5"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <div class="row">
+
+      <div class="col-6 col-sm-6 col-md-4 col-lg-3 mb-4" *ngFor="let producto of productos">
+        <div (click)="verProducto(producto.id)" class="card product-card h-100 shadow-sm">
+  
+          <!-- Imagen -->
+          <img *ngIf="producto.imagen"
+            [src]="producto.imagen"
+            alt="{{ producto.nombre }}">
+  
+          <!-- Cuerpo de la card -->
+          <div class="card-body d-flex flex-column justify-content-between">
+            
+            <!-- Título -->
+            <h5 class="card-title">{{ producto.nombre }}</h5>
+            
+            <!-- Valoraciones -->
+            <div class="rating mb-2">
+              <ng-container *ngIf="producto.valoracion_promedio !== null; else sinValoracion">
+                <ng-container *ngFor="let estrella of [1, 2, 3, 4, 5]">
+                  <i class="bi"
+                     [ngClass]="{
+                       'bi-star-fill text-warning': estrella <= producto.valoracion_promedio,
+                       'bi-star-half text-warning': estrella - 0.5 === producto.valoracion_promedio,
+                       'bi-star text-muted': estrella > producto.valoracion_promedio
+                     }"></i>
+                </ng-container>
+                <small class="text-muted ms-1">({{ producto.valoracion_promedio }})</small>
+              </ng-container>
+              <ng-template #sinValoracion>
+                <small class="text-muted">Sin valoraciones</small>
+              </ng-template>
+            </div>
+  
+            <!-- Precios -->
+            <div class="price mb-2">
+              <ng-container *ngIf="producto.oferta; else precioNormal">
+                <span class="text-muted text-decoration-line-through me-2">
+                  {{ producto.oferta.precio_original_con_iva }} €
+                </span>
+                <span class="fw-bold text-danger">
+                  {{ producto.oferta.precio_oferta_con_iva }} €
+                </span>
+                <span class="badge bg-success discount-badge ms-2">
+                  -{{ producto.oferta.descuento_porcentaje }}%
+                </span>
+              </ng-container>
+  
+              <ng-template #precioNormal>
+                <span class="text-success fw-bold">
+                  {{ producto.precio_con_iva | number:'1.2-2' }} €
+                </span>
+              </ng-template>
+            </div>
+  
+            <small class="text-muted">IVA incluido</small>
+  
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="isLoading" class="d-flex justify-content-center align-items-center" style="min-height: 60vh;">
+      <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+    </div>
+
+    <div
+      infiniteScroll
+      [infiniteScrollDistance]="1"
+      [infiniteScrollThrottle]="300"
+      (scrolled)="cargarProductos(categoriaId!)">
+    </div>
+
+  </div>
+  

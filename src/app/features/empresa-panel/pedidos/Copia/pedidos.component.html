@@ -1,0 +1,119 @@
+<div *ngIf="pedidos.length === 0" class="d-flex flex-column justify-content-center align-items-center text-muted" style="min-height: 70vh;">
+  <i class="bi bi-box-seam" style="font-size: 4rem;"></i>
+  <p class="mt-3 fs-5 text-center">No hay pedidos disponibles por el momento.</p>
+</div>
+
+<div *ngIf="isLoading" class="d-flex justify-content-center align-items-center" style="min-height: 60vh;">
+  <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+    <span class="visually-hidden">Cargando...</span>
+  </div>
+</div>
+
+<div *ngIf="!isLoading" class="accordion mt-4" id="accordionPedidos">
+  <div class="accordion-item border-0" *ngFor="let pedido of pedidos; let i = index">
+    <h2 class="accordion-header" id="heading{{ i }}">
+      <button
+        class="accordion-button collapsed bg-white border-bottom fw-semibold shadow-sm"
+        type="button"
+        data-bs-toggle="collapse"
+        [attr.data-bs-target]="'#collapse' + i"
+        aria-expanded="false"
+        [attr.aria-controls]="'collapse' + i">
+        <div class="w-100 d-flex justify-content-between align-items-center">
+          <div>
+            <span class="text-muted">Pedido #{{ pedido.id }}</span> — 
+            <span>{{ pedido.pedido.fecha_pedido }}</span> — 
+            <strong>{{ pedido.pedido.nombre_completo }}</strong>
+          </div>
+          <span
+            class="badge text-uppercase me-3"
+            [ngClass]="{
+              'bg-warning text-dark': pedido.estado_envio === 'pendiente',
+              'bg-info text-dark': pedido.estado_envio === 'preparando',
+              'bg-primary': pedido.estado_envio === 'enviado',
+              'bg-success': pedido.estado_envio === 'entregado',
+              'bg-danger': pedido.estado_envio === 'cancelado'
+            }"> 
+            {{ pedido.estado_envio }}
+          </span>
+        </div>
+      </button>
+    </h2>
+
+    <div
+      [id]="'collapse' + i"
+      class="accordion-collapse collapse"
+      [attr.aria-labelledby]="'heading' + i"
+      data-bs-parent="#accordionPedidos">
+
+      <div class="accordion-body bg-light rounded-bottom shadow-sm">
+
+        <div class="d-flex justify-content-between mb-3">
+          <div><strong>Total:</strong> <span class="text-success fw-bold">€{{ pedido.precio_total }}</span></div>
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
+          <label for="estado-{{ i }}" class="me-2 mb-0 fw-semibold">Estado del envío:</label>
+          <select
+            class="form-select form-select-sm w-auto"
+            [id]="'estado-' + i"
+            [disabled]="pedido.estado_envio == 'entregado'"
+            [(ngModel)]="pedido.estado_envio"
+            (change)="cambiarEstado(pedido)">
+            <option value="pendiente">Pendiente</option>
+            <option value="preparando">Preparando</option>
+            <option value="enviado">Enviado</option>
+            <option value="entregado">Entregado</option>
+            <option value="cancelado">Cancelado</option>
+          </select>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table align-middle">
+            <thead class="table-light">
+              <tr class="text-center">
+                <th>Imagen</th>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Precio</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let prod of pedido.productos" class="text-center">
+                <td>
+                  <img [src]="prod.producto.imagen" class="img-thumbnail rounded" style="width: 70px; height: 70px; object-fit: cover;" />
+                </td>
+                <td class="text-start">{{ prod.producto.nombre }}</td>
+                <td>{{ prod.cantidad }}</td>
+                <td><strong>€{{ prod.precio_unitario}}</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <nav *ngIf="totalPages > 1" class="d-flex justify-content-center mt-3">
+    <ul class="pagination">
+      <li class="page-item" [class.disabled]="currentPage === 1">
+        <button class="page-link" (click)="cambiarPagina(currentPage - 1)">Anterior</button>
+      </li>
+
+      <li
+        class="page-item"
+        *ngFor="let page of [].constructor(totalPages); let i = index"
+        [class.active]="currentPage === i + 1">
+        <button class="page-link" (click)="cambiarPagina(i + 1)">
+          {{ i + 1 }}
+        </button>
+      </li>
+
+      <li class="page-item" [class.disabled]="currentPage === totalPages">
+        <button class="page-link" (click)="cambiarPagina(currentPage + 1)">Siguiente</button>
+      </li>
+    </ul>
+  </nav>
+
+</div>

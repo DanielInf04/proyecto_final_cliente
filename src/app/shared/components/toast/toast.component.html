@@ -1,0 +1,36 @@
+<div
+  class="toast-container position-fixed top-0 start-50 translate-middle-x p-3"
+  style="z-index: 1080"
+  *ngIf="message"
+>
+  <div
+    class="toast show align-items-center border-0 shadow rounded text-white"
+    [ngClass]="{
+      'bg-danger': type === 'danger',
+      'bg-success': type === 'success',
+      'bg-warning text-dark': type === 'warning',
+      'bg-info': type === 'info'
+    }"
+    role="alert"
+  >
+    <div class="d-flex align-items-center">
+      <div class="toast-body d-flex align-items-center gap-2">
+        <i
+          class="fs-5"
+          [ngClass]="{
+            'bi bi-check-circle-fill': type === 'success',
+            'bi bi-exclamation-triangle-fill': type === 'danger' || type === 'warning',
+            'bi bi-info-circle-fill': type === 'info'
+          }"
+        ></i>
+        <div>{{ message }}</div>
+      </div>
+      <button
+        type="button"
+        class="btn-close btn-close-white me-2 m-auto"
+        (click)="close()"
+        aria-label="Cerrar"
+      ></button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,324 @@
+<!-- Modal para errores -->
+<div
+  class="toast-container position-fixed top-0 start-50 translate-middle-x p-3"
+  style="z-index: 1080"
+  [ngClass]="{'fade-toast': true, 'hide': !errorMessage}"
+  *ngIf="errorMessage"
+>
+  <div class="toast show align-items-center text-white bg-danger border-0 shadow rounded" role="alert">
+    <div class="d-flex align-items-center">
+      <div class="toast-body d-flex align-items-center gap-2">
+        <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+        <div>{{ errorMessage }}</div>
+      </div>
+      <button
+        type="button"
+        class="btn-close btn-close-white me-2 m-auto"
+        (click)="errorMessage = null"
+        aria-label="Cerrar"
+      ></button>
+    </div>
+  </div>
+</div>
+
+<!--<app-toast
+  [message]="toastMessage"
+  [type]="toastType"
+  [autoClose]="true">
+</app-toast>-->
+
+<div class="container mt-4 mb-4">
+    <div class="row">
+      <!-- Carrito -->
+      <div class="col-md-4 order-md-2 mb-4">
+        <h4 class="d-flex justify-content-between align-items-center mb-3">
+          <span class="text-muted">Tu carrito</span>
+          <span class="badge bg-secondary rounded-pill">{{ productos.length }}</span>
+        </h4>
+        <ul class="list-group mb-3">
+          <li class="list-group-item d-flex justify-content-between lh-condensed" *ngFor="let producto of productos">
+            <div>
+              <h6 class="my-0">
+                {{ producto.nombre }} 
+                <small class="text-muted">x{{ producto.cantidad }}</small>
+              </h6>
+              <small class="text-muted">{{ producto.categoria }}</small>
+            </div>
+            <span class="text-muted">{{ producto.precio * producto.cantidad | currency:'EUR':'symbol' }}</span>
+          </li>
+          <!-- Más productos dinámicos -->
+          <li *ngIf="cuponAplicado" class="list-group-item d-flex justify-content-between align-items-center bg-light">
+            <div class="text-success">
+              <h6 class="my-0">Cupón aplicado</h6>
+              <small>{{ cuponAplicado.codigo }} ({{ cuponAplicado.porcentaje_descuento }}% de descuento)</small>
+            </div>
+            <span class="text-success fw-bold">
+              -{{ calcularDescuento() | currency:'EUR':'symbol' }}
+            </span>
+          </li>
+          <!--<li class="list-group-item d-flex justify-content-between bg-light">
+            <div class="text-success">
+              <h6 class="my-0">Código promocional</h6>
+              <small>EXAMPLECODE</small>
+            </div>
+            <span class="text-success">- $5</span>
+          </li>-->
+          <li class="list-group-item d-flex justify-content-between">
+            <span>Total</span>
+            <strong>{{ total | currency:'EUR':'symbol' }}</strong>
+          </li>
+        </ul>
+        
+        <form class="card p-2" (submit)="aplicarCupon(); $event.preventDefault()">
+          <div class="input-group">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Código promocional"
+              [(ngModel)]="codigoPromocional"
+              name="codigoPromocional"
+            />
+            <button type="submit" class="btn btn-secondary">Aplicar</button>
+          </div>
+        
+          <div *ngIf="cuponAplicado" class="text-success mt-2">
+            <strong>¡Cupón aplicado!</strong>
+          </div>
+        
+          <div *ngIf="errorCupon" class="text-danger mt-2">
+            {{ errorCupon }}
+          </div>
+        </form>
+
+        <!--<form class="card p-2">
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="Código promocional">
+            <button type="submit" class="btn btn-secondary">Aplicar</button>
+          </div>
+        </form>-->
+      </div>
+  
+      <!-- Formulario Checkout -->
+      <div class="col-md-8 order-md-1">
+        <h4 class="mb-3">Información personal</h4>
+        <form [formGroup]="myForm" (ngSubmit)="finalizarCompra()" class="needs-validation" novalidate>
+  
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="nombre">Nombre</label>
+              <input type="text" class="form-control" formControlName="nombre" id="nombre" required>
+              <div class="text-danger" *ngIf="isInvalid('nombre')">
+                Nombre obligatorio.
+              </div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="apellidos">Apellidos</label>
+              <input type="text" class="form-control" formControlName="apellidos" id="apellidos" required>
+              <div class="text-danger" *ngIf="isInvalid('apellidos')">
+                Apellidos obligatorios.
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="email">Correo electrónico</label>
+                <input type="email" class="form-control" formControlName="email" id="email" placeholder="correo@ejemplo.com" required>
+                <div class="text-danger" *ngIf="isInvalid('email')">
+                  Introduce un correo válida.
+                </div>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="telefono">Teléfono</label>
+                <input type="text" class="form-control" formControlName="telefono" id="telefono" required>
+                <div class="text-danger" *ngIf="isInvalid('telefono')">
+                  Teléfono obligatorio.
+                </div>
+              </div>
+          </div>
+  
+          <hr class="mb-4">
+  
+          <h4 class="mb-3">Dirección de envío</h4>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="calle">Calle</label>
+              <input type="text" class="form-control" formControlName="calle" id="calle" required>
+              <div class="text-danger" *ngIf="isInvalid('calle')">
+                Calle obligatoria.
+              </div>
+            </div>
+          
+            <div class="col-md-3 mb-3">
+              <label for="puerta">Puerta</label>
+              <input type="text" class="form-control" formControlName="puerta" id="puerta" required>
+              <div class="text-danger" *ngIf="isInvalid('piso')">
+                Puerta obligatoria.
+              </div>
+            </div>
+          
+            <div class="col-md-3 mb-3">
+              <label for="piso">Piso</label>
+              <input type="text" class="form-control" formControlName="piso" id="piso" required="">
+              <div class="text-danger" *ngIf="isInvalid('piso')">
+                Piso obligatorio.
+              </div>
+            </div>
+          </div>
+  
+          <div class="row">
+            <div class="col-md-3 mb-3">
+              <label for="pais">País</label>
+              <select class="form-control" formControlName="pais" id="pais" required>
+                <option value="" disabled selected>Seleccione un país</option>
+                <option value="España">España</option>
+              </select>
+              <div class="text-danger" *ngIf="isInvalid('pais')">
+                País requerido.
+              </div>
+            </div>
+          
+            <div class="col-md-3 mb-3">
+              <label for="provincia">Provincia</label>
+              <select class="form-control" formControlName="provincia" id="provincia" required="">
+                <option value="">Selecciona una provincia</option>
+                <option *ngFor="let provincia of provincias" [value]="provincia.id">
+                  {{ provincia.nombre }}
+                </option>
+              </select>
+              <div class="text-danger" *ngIf="isInvalid('provincia')">
+                Provincia obligatoria.
+              </div>
+            </div>
+          
+            <div class="col-md-3 mb-3">
+              <label for="poblacion_id">Población</label>
+              <select class="form-control" formControlName="poblacion_id" id="poblacion_id" required="">
+                <option value="">Selecciona una poblacion</option>
+                <option *ngFor="let poblacion of poblaciones" [value]="poblacion.id">
+                  {{ poblacion.nombre }}
+                </option>
+              </select>
+              <div class="text-danger" *ngIf="isInvalid('poblacion_id')">
+                Población obligatoria.
+              </div>
+            </div>
+
+            <!--<div class="col-md-3 mb-3">
+              <label for="ciudad">Ciudad</label>
+              <input type="text" class="form-control" formControlName="ciudad" id="ciudad">
+              <div class="text-danger" *ngIf="isInvalid('ciudad')">
+                Ciudad requerida.
+              </div>
+            </div>-->
+          
+            <div class="col-md-3 mb-3">
+              <label for="codigo_postal">Código Postal</label>
+              <input
+                type="text"
+                class="form-control"
+                formControlName="codigo_postal"
+                id="codigo_postal"
+                inputmode="numeric"
+                pattern="\d*"
+                maxlength="5"
+                onkeypress="return event.charCode >= 48 && event.charCode <= 57"
+                required
+              >
+              <div class="text-danger" *ngIf="isInvalid('poblacion_id')">
+                Codido postal obligatorio.
+              </div>
+              <div class="text-danger mt-1" *ngIf="errorCodigoPostal">
+                {{ errorCodigoPostal }}
+              </div>
+            </div>
+          
+            <div class="form-check mb-4">
+              <input class="form-check-input" type="checkbox" id="guardarDireccion" formControlName="guardarDireccion">
+              <label class="form-check-label" for="guardarDireccion">
+                Guardar esta dirección para futuros pedidos
+              </label>
+            </div>
+          </div>
+  
+          <hr class="mb-4">
+  
+          <h4 class="mb-3">Método de pago</h4>
+          <div class="form-check mb-2">
+            <input id="tarjeta"
+              name="metodo_pago" 
+              type="radio" 
+              class="form-check-input"
+              [value]="'tarjeta'"
+              formControlName="metodo_pago"
+              required>
+            <label class="form-check-label" for="tarjeta">Tarjeta de crédito</label>
+          </div>
+          
+          <!-- ✅ Solo se muestra si se elige tarjeta -->
+          <div *ngIf="myForm.value.metodo_pago === 'tarjeta'" class="card p-3 mb-3 border">
+            <div class="row gy-3">
+              <div class="col-md-6">
+                <label for="cc-name" class="form-label">Nombre en la tarjeta</label>
+                <input type="text" class="form-control" id="cc-name" placeholder="Juan Pérez" disabled>
+                <small class="text-muted">Como aparece en la tarjeta</small>
+              </div>
+          
+              <div class="col-md-6">
+                <label for="cc-number" class="form-label">Número de tarjeta</label>
+                <input type="text" class="form-control" id="cc-number" placeholder="1234 5678 9012 3456" disabled>
+              </div>
+          
+              <div class="col-md-3">
+                <label for="cc-expiration" class="form-label">Expiración</label>
+                <input type="text" class="form-control" id="cc-expiration" placeholder="MM/AA" disabled>
+              </div>
+          
+              <div class="col-md-3">
+                <label for="cc-cvv" class="form-label">CVV</label>
+                <input type="text" class="form-control" id="cc-cvv" placeholder="123" disabled>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-check mb-2">
+            <input id="paypal" 
+              name="metodo_pago" 
+              type="radio" 
+              class="form-check-input" 
+              [value]="'paypal'"
+              formControlName="metodo_pago"
+              required>
+            <label class="form-check-label" for="paypal">PayPal</label>
+          </div>
+          
+          <!-- Aquí se inserta el botón de PayPal al seleccionar esa opción -->
+          <div *ngIf="myForm.value.metodo_pago === 'paypal'">
+            <app-paypal-button
+              [productos]="productos"
+              [total]="total"
+              [datosContacto]="datosContactoPaypal"
+              [onAprobado]="onPaypalAprobado.bind(this)">
+            </app-paypal-button>
+          </div>
+
+          <div class="text-danger mt-2" *ngIf="isInvalid('metodo_pago')">
+            Debes seleccionar un método de pago.
+          </div>
+
+          <!--<div class="form-check">
+            <input id="cash" name="paymentMethod" type="radio" class="form-check-input" value="cash" required>
+            <label class="form-check-label" for="cash">Pago contra entrega</label>
+          </div>-->
+  
+          <!--<div class="mb-3 mt-3">
+            <label for="paymentNotes">Notas para el pedido (opcional)</label>
+            <textarea class="form-control" id="paymentNotes" rows="2" placeholder="Instrucciones especiales..."></textarea>
+          </div>-->
+  
+          <hr class="mb-4">
+          <button class="btn btn-primary btn-lg w-100" type="submit">Finalizar compra</button>
+        </form>
+      </div>
+    </div>
+  </div>
