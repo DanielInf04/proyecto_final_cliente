@@ -1,0 +1,7 @@
+.fade-toast {
+    transition: opacity 0.5s ease;
+    opacity: 1;
+}
+.fade-toast.hide {
+    opacity: 0;
+}

@@ -1,0 +1,15 @@
+.image-wrapper {
+  transition: all 0.3s ease-in-out;
+
+  &:hover .delete-btn {
+    opacity: 1;
+  }
+}
+
+.delete-btn {
+  transform: translate(30%, -30%);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  padding: 0.25rem 0.4rem;
+  font-size: 0.75rem;
+}

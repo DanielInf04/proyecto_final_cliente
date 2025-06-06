@@ -1,0 +1,138 @@
+<h3 class="fill-remaining-space mt-3 mb-3">Editar Producto</h3>
+<div class="container">
+
+  <div *ngIf="isLoading" class="d-flex justify-content-center align-items-center" style="min-height: 60vh;">
+    <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+  </div>
+
+  <form *ngIf="!isLoading" [formGroup]="myForm" (ngSubmit)="onSubmit(myForm.value)">
+
+    <!-- Imagen principal actual -->
+    <div class="form-group">
+      <label>Imagen actual:</label><br>
+      <img *ngIf="imagenActual" [src]="imagenActual" alt="Imagen actual" height="250" class="rounded border">
+    </div>
+
+    <!-- Miniaturas del resto de imágenes actuales -->
+    <div class="form-group" *ngIf="imagenesActuales.length > 1">
+      <label>Otras imágenes actuales:</label>
+      <div class="d-flex gap-2 flex-wrap">
+        <img
+          *ngFor="let img of imagenesActuales.slice(1)"
+          [src]="img"
+          alt="Miniatura actual"
+          height="100"
+          class="rounded border"
+          style="cursor: pointer;">
+      </div>
+    </div>
+
+    <!--<div class="form-group">
+      <label for="imagen">Cambiar imagen:</label>
+      <input type="file" class="form-control mb-3" (change)="onFileSelected($event)">
+    </div>-->
+
+    <div class="form-group mb-2">
+      <label for="nombre">Nombre:</label>
+      <input class="form-control" id="nombre" formControlName="nombre" [class.is-invalid]="myForm.get('nombre')?.invalid && myForm.get('nombre')?.touched">
+      <div class="invalid-feedback mb-1" *ngIf="myForm.get('nombre')?.errors?.['required']">
+        El nombre es obligatorio.
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="descripcion">Descripción:</label>
+      <textarea
+        class="form-control"
+        id="descripcion"
+        formControlName="descripcion"
+        rows="3"
+        style="resize: none"
+        [class.is-invalid]="myForm.get('descripcion')?.invalid && myForm.get('descripcion')?.touched"
+      ></textarea>
+      <div class="invalid-feedback" *ngIf="myForm.get('descripcion')?.errors?.['required']">
+        La descripción es obligatoria.
+      </div>
+      <div class="invalid-feedback" *ngIf="myForm.get('descripcion')?.errors?.['maxlength']">
+        La descripción no puede superar los 255 caracteres.
+      </div>
+    </div>
+
+    <div class="form-group mt-3 mb-2">
+      <div class="row g-2 align-items-end">
+        <div class="col-md-2">
+          <label for="precio_base">Precio base:</label>
+          <input type="number" class="form-control" id="precio_base" formControlName="precio_base" [class.is-invalid]="myForm.get('precio_base')?.invalid && myForm.get('precio_base')?.touched">
+          <div class="invalid-feedback" *ngIf="myForm.get('precio_base')?.errors?.['required']">
+            El precio base es obligatorio.
+          </div>
+          <div class="invalid-feedback" *ngIf="myForm.get('precio_base')?.errors?.['min']">
+            El precio debe ser mayor a 0.
+          </div>
+        </div>
+
+        <div *ngIf="precioBaseConIva !== null" class="col-auto text-muted small mb-1">
+          <label class="d-block">&nbsp;</label>
+          <div>
+            <strong>IVA incluido:</strong><br>
+            {{ precioBaseConIva | currency:'EUR':'symbol':'1.2-2' }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group mb-2">
+      <label for="stock">Stock:</label>
+      <input type="number" class="form-control" id="stock" formControlName="stock" [class.is-invalid]="myForm.get('stock')?.invalid && myForm.get('stock')?.touched">
+      <div class="invalid-feedback" *ngIf="myForm.get('stock')?.errors?.['required']">
+        El stock es obligatorio.
+      </div>
+      <div class="invalid-feedback" *ngIf="myForm.get('stock')?.errors?.['min']">
+        El stock no puede ser negativo.
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="categoria">Categoría:</label>
+      <select class="form-control" formControlName="categoria_id" id="categoria" [class.is-invalid]="myForm.get('categoria_id')?.invalid && myForm.get('categoria_id')?.touched">
+        <option value="">Seleccione una categoría</option>
+        <option *ngFor="let cat of categorias" [value]="cat.id">{{ cat.nombre }}</option>
+      </select>
+      <div class="invalid-feedback" *ngIf="myForm.get('categoria_id')?.errors?.['required']">
+        La categoría es obligatoria.
+      </div>
+    </div>
+
+    <div class="form-group mt-4 mb-4">
+      <h5 class="text-primary">Opcional: Oferta / Promoción</h5>
+
+      <div class="row g-2 align-items-end">
+        <div class="col-md-2">
+          <label for="precio_oferta">Precio con oferta:</label>
+          <input type="number" class="form-control" formControlName="precio_oferta" id="precio_oferta" placeholder="Ej. 699.99">
+        </div>
+
+        <div *ngIf="precioFinalConIva !== null" class="col-auto text-muted small mb-1">
+          <label class="d-block">&nbsp;</label>
+          <div>
+            <strong>IVA incluido:</strong><br>
+            {{ precioFinalConIva | currency:'EUR':'symbol':'1.2-2' }}
+          </div>
+        </div>
+      </div>
+
+      <div class="form-check mt-3">
+        <input type="checkbox" class="form-check-input" formControlName="oferta_activa" id="oferta_activa">
+        <label class="form-check-label" for="oferta_activa">¿Oferta activa?</label>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary mb-2" [disabled]="myForm.invalid">Actualizar Producto</button>
+  </form>
+</div>
+
+<div *ngIf="errorMessage" class="alert alert-danger">
+  {{ errorMessage }}
+</div>

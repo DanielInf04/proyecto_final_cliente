@@ -1,0 +1,111 @@
+<!-- Mostrar título y pedidos solo si hay -->
+<ng-container *ngIf="!isLoading && pedidos.length > 0">
+  <h3 class="fw-bold mb-1 mt-4">Mis pedidos</h3>
+  <p class="text-muted">Aquí encontrarás tus pedidos online.</p>
+
+  <div *ngFor="let pedido of pedidos" class="row g-4 mb-4">
+    <!-- Tarjeta izquierda -->
+    <div class="col-md-4">
+      <div class="order-card-left p-4 rounded-4" style="background-color: #f1f8f6; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
+        <div class="mb-3">
+          <h5 class="fw-bold mb-1">{{ pedido.fecha_pedido | date:'d MMMM y' | titlecase }}</h5>
+          <small class="text-muted">Pedido Online — {{ pedido.fecha_pedido | date:'HH:mm' }}</small>
+        </div>
+
+        <div class="mb-3">
+          <span class="badge text-uppercase p-2"
+              [ngClass]="{
+                  'bg-success': pedido.estado_pago === 'pagado',
+                  'bg-warning text-dark': pedido.estado_pago === 'pendiente',
+                  'bg-danger': pedido.estado_pago === 'fallido'
+              }">
+            {{ pedido.estado_pago | titlecase }}
+          </span>
+        </div>
+
+        <div class="mb-2 border-top pt-3">
+          <p class="mb-1"><strong>N.º de pedido:</strong> {{ pedido.id }}</p>
+          <p class="mb-1"><strong>Total:</strong> €{{ pedido.total }}</p>
+        </div>
+
+        <button class="btn btn-success w-100 fw-semibold mt-3"
+                [routerLink]="['/user-profile-v2/orders/detail-order/', pedido.id]">
+          Ver detalles del pedido
+        </button>
+      </div>
+    </div>
+
+    <!-- Tarjeta derecha -->
+    <div class="col-md-8">
+      <div class="order-card-right p-4 rounded-4" style="box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);">
+        <h6 class="fw-bold mb-3 border-bottom pb-2">Resumen de la compra</h6>
+
+        <div *ngFor="let empresa of pedido.empresas">
+          <div *ngFor="let prod of empresa.productos" class="d-flex align-items-start mb-4">
+            <a [routerLink]="['/product', prod.producto_id]">
+              <img [src]="prod.imagen" alt="{{ prod.nombre }}"
+                   class="me-3"
+                   style="width: 140px; height: auto; max-height: 140px; cursor: pointer;">
+            </a>
+
+            <div class="flex-grow-1">
+              <div class="d-flex justify-content-between">
+                <p class="fw-semibold mb-1 mb-md-0 me-2 flex-grow-1 text-wrap">{{ prod.nombre }}</p>
+                <span class="fw-semibold text-nowrap">{{ prod.precio_unitario }}€</span>
+              </div>
+              <small class="text-muted d-block mb-2">Cantidad: {{ prod.cantidad }}</small>
+
+              <div *ngIf="prod.valoracion_cliente; else valorar">
+                <ng-container *ngFor="let estrella of [1,2,3,4,5]">
+                  <i class="bi"
+                     [ngClass]="{
+                       'bi-star-fill text-warning': estrella <= prod.valoracion_cliente,
+                       'bi-star text-muted': estrella > prod.valoracion_cliente
+                     }"></i>
+                </ng-container>
+              </div>
+
+              <ng-template #valorar>
+                <div class="d-flex flex-wrap gap-3">
+                  <button *ngIf="empresa.estado_envio === 'entregado'"
+                          class="btn btn-link p-0 fw-semibold d-flex align-items-center text-dark"
+                          (click)="openReviewModal(prod.producto_id, pedido.cliente_id)">
+                    <i class="bi bi-star-fill me-2"></i> Valorar el producto
+                  </button>
+                </div>
+              </ng-template>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scroll infinito -->
+  <div
+    infiniteScroll
+    [infiniteScrollDistance]="2"
+    [infiniteScrollThrottle]="300"
+    [infiniteScrollDisabled]="isLoadingMore || currentPage > totalPages"
+    (scrolled)="cargarMasPedidos()">
+  </div>
+
+</ng-container>
+
+<div *ngIf="isLoading" class="d-flex justify-content-center align-items-center" style="min-height: 60vh;">
+  <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+    <span class="visually-hidden">Cargando...</span>
+  </div>
+</div>
+
+<div *ngIf="!isLoading && pedidos.length === 0" class="text-center py-5">
+  <h4 class="fw-bold mb-3">Aún no tienes pedidos</h4>
+  <p class="text-muted">Cuando hagas una compra, tus pedidos aparecerán aquí.</p>
+  <a routerLink="/tienda" class="btn btn-success mt-3">Ir a la tienda</a>
+</div>
+
+<!-- Modal para resela -->
+<app-review-modal 
+  #reviewModal
+  (reviewSubmitted)="actualizarValoracion($event)">
+</app-review-modal>

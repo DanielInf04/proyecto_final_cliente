@@ -1,0 +1,97 @@
+<div class="container py-4">
+  <h2 class="mb-4 mt-2">Resultados de búsqueda para: <strong>{{ termino }}</strong></h2>
+
+  <app-alert
+      *ngIf="alertMessage"
+      [message]="alertMessage"
+      [type]="alertType"
+      [autoClose]="true">
+  </app-alert>
+
+  <div *ngIf="isLoading" class="d-flex justify-content-center align-items-center" style="min-height: 60vh;">
+    <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+  </div>
+
+  <!-- Mensaje si no hay resultados -->
+  <div *ngIf="!isLoading && resultados.length === 0">
+    <p class="text-muted">No se encontraron productos para "{{ termino }}".</p>
+  </div>
+
+  <!-- Tabla con resultados -->
+  <div *ngIf="!isLoading && resultados && resultados.length > 0" class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Imagen</th>
+          <th>Nombre</th>
+          <!--<th>Descripción</th>-->
+          <th>Precio base</th>
+          <th>IVA (%)</th>
+          <th>Precio con IVA</th>
+          <th>Stock</th>
+          <th>Estado</th>
+          <th colspan="2">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let resultado of resultados">
+          <td style="width: 200px;">
+            <img 
+              *ngIf="resultado.imagenes?.length" 
+              [src]="resultado.imagenes[0]" 
+              alt="imagen del producto" 
+              width="100" 
+              height="100" 
+              style="object-fit: contain;" />
+          </td>
+          <td style="width: 300px">{{resultado.nombre}}</td>
+          <!--<td style="width: 350px;">{{producto.descripcion}}</td>-->
+          <td>{{resultado.precio}}€</td>
+          <td>{{resultado.iva_porcentaje * 100}}</td>
+          <td>{{resultado.precio_con_iva | number:'1.2-2'}}€</td>
+          <td>{{resultado.stock}}</td>
+          <td>
+            <select
+              class="form-control"
+              [(ngModel)]="resultado.estado"
+              (change)="cambiarEstado(resultado)"
+            >
+              <option value="activo">Activo</option>
+              <option value="inactivo">Inactivo</option>
+            </select>
+          </td>
+          <td>
+            <button type="button" 
+              class="btn btn-success btn-sm" 
+              [routerLink]="['/empresa-panel/product-edit/', resultado.id]"
+              [state]="{ returnTo: '/empresa-panel/productos/search?query=' + termino }"
+                    >Editar</button>
+          </td>
+          <td>
+            <button type="button" class="btn btn-danger btn-sm" 
+                    (click)="eliminarProducto(resultado.id)">Eliminar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Paginación -->
+  <nav *ngIf="totalPages > 1" class="d-flex justify-content-center mt-4">
+    <ul class="pagination">
+      <li class="page-item" [class.disabled]="currentPage === 1">
+        <button class="page-link" (click)="cambiarPagina(currentPage - 1)">Anterior</button>
+      </li>
+
+      <li *ngFor="let page of [].constructor(totalPages); let i = index" class="page-item" [class.active]="currentPage === i + 1">
+        <button class="page-link" (click)="cambiarPagina(i + 1)">{{ i + 1 }}</button>
+      </li>
+
+      <li class="page-item" [class.disabled]="currentPage === totalPages">
+        <button class="page-link" (click)="cambiarPagina(currentPage + 1)">Siguiente</button>
+      </li>
+    </ul>
+  </nav>
+</div>

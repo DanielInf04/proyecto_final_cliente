@@ -1,0 +1,35 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4">
+  
+  <!-- Brand -->
+  <a class="navbar-brand" routerLink="/empresa-panel/productos-list">
+    <!--🏢 Mi Empresa-->
+    {{ nameBusiness || 'Mi Empresa' }}
+  </a>
+
+  <!-- Botón toggler para móviles -->
+  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarEmpresa" aria-controls="navbarEmpresa" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <!-- Menú colapsable -->
+  <div class="collapse navbar-collapse" id="navbarEmpresa">
+    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/empresa-panel/productos-list">Dashboard</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/empresa-panel/pedidos">Pedidos</a>
+      </li>
+      <!--<li class="nav-item">
+        <a class="nav-link" routerLink="/empresa-panel/valoraciones">Valoraciones</a>
+      </li>-->
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/empresa-panel/perfil">Perfil</a>
+      </li>
+    </ul>
+
+    <!-- Botón cerrar sesión -->
+    <button class="btn btn-outline-light btn-sm" (click)="logout()">Cerrar sesión</button>
+  </div>
+
+</nav>

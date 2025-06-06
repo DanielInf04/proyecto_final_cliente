@@ -1,0 +1,41 @@
+<div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="reviewModalLabel">Dejar reseña</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="mb-3 text-center">
+            <label class="form-label fw-bold">Calificación</label>
+            <div 
+              class="star-rating d-flex justify-content-center gap-2"
+              (mouseleave)="clearHovered()">
+              <i class="bi"
+              class="fs-2 pointer"
+                *ngFor="let star of [1,2,3,4,5]"
+                [ngClass]="{
+                  'bi-star-fill': star <= (hoveredStar || reviewData.valoracion),
+                  'bi-star': star > (hoveredStar || reviewData.valoracion),
+                  'text-warning': star <= (hoveredStar || reviewData.valoracion),
+                  'text-secondary': star > (hoveredStar || reviewData.valoracion)
+                }"
+                (mouseenter)="setHovered(star)"
+                (click)="setRating(star)">
+              </i>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="comentario" class="form-label">Comentario</label>
+            <textarea class="form-control" id="comentario" rows="3" [(ngModel)]="reviewData.comentario" name="comentario"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-success" (click)="submitReview()">Enviar reseña</button>
+      </div>
+    </div>
+  </div>
+</div>

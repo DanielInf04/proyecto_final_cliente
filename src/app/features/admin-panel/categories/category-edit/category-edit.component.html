@@ -1,0 +1,48 @@
+<h3 class="fill-remaining-space mt-3 mb-3">Editar Categoria</h3>
+<div class="container">
+
+  <div *ngIf="isLoading" class="d-flex justify-content-center align-items-center" style="min-height: 60vh;">
+    <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+  </div>
+
+  <form *ngIf="!isLoading" [formGroup]="myForm" (ngSubmit)="onSubmit(myForm.value)">
+
+    <!-- Previsualización (opcional) -->
+    <div class="mt-3" *ngIf="imagenPreview || imagenActual">
+      <label>Previsualización:</label><br>
+      <img
+        [src]="imagenPreview ? imagenPreview : imagenActual"
+        alt="Imagen actual"
+        height="200"
+        class="rounded border">
+    </div>
+
+    <div class="form-group mt-3">
+      <label for="imagen">Imagen de la categoría:</label>
+      <input type="file" class="form-control" id="imagen" (change)="onFileSelected($event)">
+    </div>
+
+    <div class="form-group">
+      <label for="nombre">Nombre:</label>
+      <input class="form-control" formControlName="nombre" id="nombre">
+    </div>
+
+    <div class="form-group">
+      <label for="iva_porcentaje">Porcentaje IVA:</label>
+      <select class="form-control" formControlName="iva_porcentaje" id="iva_porcentaje">
+        <option value="" disabled>Selecciona un porcentaje de IVA</option>
+        <option value="0.00">Exento (0%)</option>
+        <option value="0.10">Reducido (10%)</option>
+        <option value="0.21">General (21%)</option>
+      </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-4" [disabled]="myForm.invalid">Actualizar Categoria</button>
+  </form>
+</div>
+
+<div *ngIf="errorMessage" class="alert alert-danger">
+  {{ errorMessage }}
+</div>

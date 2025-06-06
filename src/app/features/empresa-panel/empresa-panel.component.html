@@ -1,0 +1,11 @@
+<app-navbar-empresa></app-navbar-empresa>
+<app-toast
+  *ngIf="toastMessage"
+  [message]="toastMessage"
+  [type]="toastType"
+  [autoClose]="false">
+</app-toast>
+<app-modal></app-modal>
+<div class="container">
+  <router-outlet></router-outlet>
+</div>
