@@ -189,17 +189,15 @@ export class CheckoutComponent implements OnInit, OnDestroy {
               error: (err) => {
                 console.error('Error al cargar poblaciones', err);
                 this.poblaciones = [];
-              },
-              complete: () => {
-                setTimeout(() => {
-                  this.isLoading = false;
-                }, 100)
               }
             });
           } else {
             this.poblaciones = [];
           }
         });
+      },
+      complete: () => {
+        this.isLoading = false;
       }
     });
     console.log("Total sin descuento:", this.totalSinDescuento);
