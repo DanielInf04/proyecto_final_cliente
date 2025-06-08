@@ -80,8 +80,17 @@
 
         <div class="accordion-body bg-light rounded-bottom shadow-sm">
 
-          <div class="d-flex justify-content-between mb-3">
-            <div><strong>Total:</strong> <span class="text-success fw-bold">€{{ pedido.precio_total }}</span></div>
+          <div class="mb-3">
+            <div><strong>Dirección de entrega:</strong></div>
+            <div class="ms-2">
+              <div>{{ pedido.pedido.direccion_entrega?.calle }}, {{ pedido.pedido.direccion_entrega?.puerta }} - Piso {{ pedido.pedido.direccion_entrega?.piso }}</div>
+              <div>{{ pedido.pedido.direccion_entrega?.codigo_postal }} {{ pedido.pedido.direccion_entrega?.poblacion?.nombre }}, {{ pedido.pedido.direccion_entrega?.poblacion?.provincia }}</div>
+              <div>{{ pedido.pedido.direccion_entrega?.pais }}</div>
+            </div>
+
+            <div class="mt-2">
+              <strong>Total: </strong> <span class="text-success fw-bold">€{{ pedido.precio_total }}</span>
+            </div>
           </div>
 
           <div class="d-flex align-items-center gap-2">
